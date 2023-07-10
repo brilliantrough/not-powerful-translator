@@ -1,0 +1,26 @@
+<!--
+ * @Author: brilliantrough pzyinnju@163.com
+ * @Date: 2023-07-10 21:04:19
+ * @LastEditors: brilliantrough pzyinnju@163.com
+ * @LastEditTime: 2023-07-10 21:24:25
+ * @FilePath: \translate_ui\CHANGELOG
+ * @Description: 
+ * 
+ * Copyright (c) 2023 by {brilliantrough pzyinnju@163.com}, All Rights Reserved. 
+-->
+# v1.0
+
+> 此前已经经历了四个版本的更新，最终成为这个稍微稳定的版本，取名为 1.0 版本
+
+## 功能
+
++ 实现了按 Enter 键翻译
++ 实现了英文划词翻译
++ 实现了中文翻译成英文结果自动复制进剪贴板
+
+## TODO
+
++ 代理设置，目前使用的是系统代理和 127.0.0.1:7890 的代理
++ 字体设置，目前采用的是中文黑体，英文宋体
++ UI 变化，目前 UI 不可变化，可通过选项变化设计成只进行汉译英或英译汉的 UI
++ logo 设置，目前使用糖果形状的 logo
