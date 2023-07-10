@@ -2,7 +2,7 @@
  * @Author: brilliantrough pzyinnju@163.com
  * @Date: 2023-07-10 20:20:22
  * @LastEditors: brilliantrough pzyinnju@163.com
- * @LastEditTime: 2023-07-10 21:31:28
+ * @LastEditTime: 2023-07-10 21:33:22
  * @FilePath: \translate_ui\README.md
  * @Description:  
  * 
@@ -42,7 +42,7 @@ pip install -r requirements.txt
 
 ### 按钮
 
-1. 提供了 `Google`，`DeepL` 和 `ChatGPT` 三个选项，点击其中一个，便可以切换相应的翻译引擎。 
+1. 提供了 `Google`，`DeepL` 和 `ChatGPT` 三个选项，点击其中一个，便可以切换相应的翻译引擎。
 2. `英译汉` 和 `汉译英` 按钮则意味着使用当前的引擎进行相应的翻译，并在相应的输出框中输出结果。 `All` 按钮则是两个都进行翻译，别无二致。
 3. `Exit` 按钮则是对应退出程序。
 
