@@ -1,4 +1,4 @@
-'''
+"""
 Author: brilliantrough pzyinnju@163.com
 Date: 2023-06-29 03:20:09
 LastEditors: brilliantrough pzyinnju@163.com
@@ -7,7 +7,7 @@ FilePath: \googletranslate\translate_ui\mouse_listen.py
 Description: 
 
 Copyright (c) 2023 by {brilliantrough pzyinnju@163.com}, All Rights Reserved. 
-'''
+"""
 
 from pyperclip import copy, paste
 from pynput.keyboard import Key, Controller
@@ -63,7 +63,7 @@ class MouseListener(QThread):
 
     def run(self):
         """the main thread, to translate the selected text
-        
+
         * the original text will be restored
         * the selected text will be copied to the clipboard
         * the translated text will be printed to the console
@@ -94,9 +94,9 @@ class MouseListener(QThread):
             copy(original_text)
 
             if (
-                    selected_text == last_selected_text
-                    or selected_text == ""
-                    or selected_text == original_text
+                selected_text == last_selected_text
+                or selected_text == ""
+                or selected_text == original_text
             ):
                 continue
             # print("the selected text is", selected_text)

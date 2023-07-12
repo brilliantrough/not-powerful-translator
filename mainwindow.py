@@ -1,4 +1,4 @@
-'''
+"""
 Author: brilliantrough pzyinnju@163.com
 Date: 2023-06-29 00:09:28
 LastEditors: brilliantrough pzyinnju@163.com
@@ -7,7 +7,7 @@ FilePath: \googletranslate\translate_ui\mainwindow.py
 Description: 
 
 Copyright (c) 2023 by {brilliantrough pzyinnju@163.com}, All Rights Reserved. 
-'''
+"""
 
 from deepL_trans import DeepL
 from google_trans import Google
@@ -160,7 +160,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         stream = self.actionChatGPT_Stream.isChecked()
 
     def eventFilter(self, obj, event):
-        """ 重写事件过滤器，用来实现 shift+enter 换行，enter 翻译
+        """重写事件过滤器，用来实现 shift+enter 换行，enter 翻译
 
         Args:
             obj (QWidget):  事件发生的对象
@@ -169,11 +169,19 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         Returns:
             bool:  是否拦截事件
         """
-        if event.type() == QKeyEvent.KeyPress and event.key() == Qt.Key_Space and event.modifiers() == (   Qt.ShiftModifier):
+        if (
+            event.type() == QKeyEvent.KeyPress
+            and event.key() == Qt.Key_Space
+            and event.modifiers() == (Qt.ShiftModifier)
+        ):
             self.actionClose_Mouse_Selection.trigger()
             return True
         if obj == self.inputZH or obj == self.inputEN:
-            if event.type() == QKeyEvent.KeyPress and event.key() == Qt.Key_Return and event.modifiers() == Qt.ShiftModifier:
+            if (
+                event.type() == QKeyEvent.KeyPress
+                and event.key() == Qt.Key_Return
+                and event.modifiers() == Qt.ShiftModifier
+            ):
                 obj.insertPlainText("\n")
                 return True
             elif event.type() == QKeyEvent.KeyPress and event.key() == Qt.Key_Return:
@@ -187,7 +195,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         return False
 
     def hideEvent(self, event: QHideEvent) -> None:
-        if not self.actionClose_Mouse_Selection.isChecked() and self.actionCancel_Mouse_Backstage.isChecked():
+        if (
+            not self.actionClose_Mouse_Selection.isChecked()
+            and self.actionCancel_Mouse_Backstage.isChecked()
+        ):
             self.actionClose_Mouse_Selection.trigger()
             self.reserve_flag = True
         super().hideEvent(event)
@@ -227,7 +238,9 @@ class ZH2ENThread(QObject):
             if stream:
                 for i in result:
                     try:
-                        self.translate_finished.emit(i.choices[0]["delta"]["content"], status)
+                        self.translate_finished.emit(
+                            i.choices[0]["delta"]["content"], status
+                        )
                     except Exception:
                         return
             else:
@@ -273,7 +286,9 @@ class EN2ZHThread(QObject):
             if stream:
                 for i in result:
                     try:
-                        self.translate_finished.emit(i.choices[0]["delta"]["content"], status)
+                        self.translate_finished.emit(
+                            i.choices[0]["delta"]["content"], status
+                        )
                     except Exception:
                         return
             else:

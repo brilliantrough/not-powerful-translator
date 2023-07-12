@@ -155,7 +155,7 @@
      <x>0</x>
      <y>0</y>
      <width>971</width>
-     <height>26</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu">
@@ -168,7 +168,32 @@
     <addaction name="actionChatGPT_Stream"/>
     <addaction name="actionCancel_Mouse_Backstage"/>
    </widget>
+   <widget class="QMenu" name="menusettings">
+    <property name="title">
+     <string>Settings</string>
+    </property>
+    <addaction name="actionproxy"/>
+   </widget>
+   <widget class="QMenu" name="menuView">
+    <property name="title">
+     <string>View</string>
+    </property>
+    <addaction name="actionFont"/>
+    <addaction name="actionJust_ZH"/>
+    <addaction name="actionJust_EN"/>
+    <addaction name="actionRestore"/>
+   </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="actionAbout"/>
+    <addaction name="actionManual"/>
+   </widget>
    <addaction name="menu"/>
+   <addaction name="menusettings"/>
+   <addaction name="menuView"/>
+   <addaction name="menuHelp"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <widget class="QToolBar" name="toolBar">
@@ -227,6 +252,41 @@
    </property>
    <property name="text">
     <string>Cancel Mouse Backstage</string>
+   </property>
+  </action>
+  <action name="actionproxy">
+   <property name="text">
+    <string>proxy</string>
+   </property>
+  </action>
+  <action name="actionFont">
+   <property name="text">
+    <string>Font</string>
+   </property>
+  </action>
+  <action name="actionJust_ZH">
+   <property name="text">
+    <string>Just ZH</string>
+   </property>
+  </action>
+  <action name="actionJust_EN">
+   <property name="text">
+    <string>Just EN</string>
+   </property>
+  </action>
+  <action name="actionRestore">
+   <property name="text">
+    <string>Restore</string>
+   </property>
+  </action>
+  <action name="actionAbout">
+   <property name="text">
+    <string>About</string>
+   </property>
+  </action>
+  <action name="actionManual">
+   <property name="text">
+    <string>Manual</string>
    </property>
   </action>
  </widget>

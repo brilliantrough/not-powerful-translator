@@ -8,18 +8,57 @@
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
-from PySide6.QtCore import (QCoreApplication, QDate, QDateTime, QLocale,
-    QMetaObject, QObject, QPoint, QRect,
-    QSize, QTime, QUrl, Qt)
-from PySide6.QtGui import (QAction, QBrush, QColor, QConicalGradient,
-    QCursor, QFont, QFontDatabase, QGradient,
-    QIcon, QImage, QKeySequence, QLinearGradient,
-    QPainter, QPalette, QPixmap, QRadialGradient,
-    QTransform)
-from PySide6.QtWidgets import (QApplication, QGridLayout, QHBoxLayout, QLineEdit,
-    QMainWindow, QMenu, QMenuBar, QPlainTextEdit,
-    QPushButton, QSizePolicy, QStatusBar, QTextBrowser,
-    QToolBar, QVBoxLayout, QWidget)
+from PySide6.QtCore import (
+    QCoreApplication,
+    QDate,
+    QDateTime,
+    QLocale,
+    QMetaObject,
+    QObject,
+    QPoint,
+    QRect,
+    QSize,
+    QTime,
+    QUrl,
+    Qt,
+)
+from PySide6.QtGui import (
+    QAction,
+    QBrush,
+    QColor,
+    QConicalGradient,
+    QCursor,
+    QFont,
+    QFontDatabase,
+    QGradient,
+    QIcon,
+    QImage,
+    QKeySequence,
+    QLinearGradient,
+    QPainter,
+    QPalette,
+    QPixmap,
+    QRadialGradient,
+    QTransform,
+)
+from PySide6.QtWidgets import (
+    QApplication,
+    QGridLayout,
+    QHBoxLayout,
+    QLineEdit,
+    QMainWindow,
+    QMenu,
+    QMenuBar,
+    QPlainTextEdit,
+    QPushButton,
+    QSizePolicy,
+    QStatusBar,
+    QTextBrowser,
+    QToolBar,
+    QVBoxLayout,
+    QWidget,
+)
+
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -43,6 +82,20 @@ class Ui_MainWindow(object):
         self.actionCancel_Mouse_Backstage.setObjectName(u"actionCancel_Mouse_Backstage")
         self.actionCancel_Mouse_Backstage.setCheckable(True)
         self.actionCancel_Mouse_Backstage.setChecked(True)
+        self.actionproxy = QAction(MainWindow)
+        self.actionproxy.setObjectName(u"actionproxy")
+        self.actionFont = QAction(MainWindow)
+        self.actionFont.setObjectName(u"actionFont")
+        self.actionJust_ZH = QAction(MainWindow)
+        self.actionJust_ZH.setObjectName(u"actionJust_ZH")
+        self.actionJust_EN = QAction(MainWindow)
+        self.actionJust_EN.setObjectName(u"actionJust_EN")
+        self.actionRestore = QAction(MainWindow)
+        self.actionRestore.setObjectName(u"actionRestore")
+        self.actionAbout = QAction(MainWindow)
+        self.actionAbout.setObjectName(u"actionAbout")
+        self.actionManual = QAction(MainWindow)
+        self.actionManual.setObjectName(u"actionManual")
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.verticalLayout = QVBoxLayout(self.centralwidget)
@@ -78,7 +131,6 @@ class Ui_MainWindow(object):
         self.inputZH.setFont(font)
 
         self.gridLayout.addWidget(self.inputZH, 1, 1, 1, 1)
-
 
         self.verticalLayout.addLayout(self.gridLayout)
 
@@ -139,18 +191,22 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout.addWidget(self.exitBtn)
 
-
         self.verticalLayout_2.addLayout(self.horizontalLayout)
-
 
         self.verticalLayout.addWidget(self.widget)
 
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName(u"menubar")
-        self.menubar.setGeometry(QRect(0, 0, 971, 26))
+        self.menubar.setGeometry(QRect(0, 0, 971, 22))
         self.menu = QMenu(self.menubar)
         self.menu.setObjectName(u"menu")
+        self.menusettings = QMenu(self.menubar)
+        self.menusettings.setObjectName(u"menusettings")
+        self.menuView = QMenu(self.menubar)
+        self.menuView.setObjectName(u"menuView")
+        self.menuHelp = QMenu(self.menubar)
+        self.menuHelp.setObjectName(u"menuHelp")
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QStatusBar(MainWindow)
         self.statusbar.setObjectName(u"statusbar")
@@ -160,34 +216,91 @@ class Ui_MainWindow(object):
         MainWindow.addToolBar(Qt.RightToolBarArea, self.toolBar)
 
         self.menubar.addAction(self.menu.menuAction())
+        self.menubar.addAction(self.menusettings.menuAction())
+        self.menubar.addAction(self.menuView.menuAction())
+        self.menubar.addAction(self.menuHelp.menuAction())
         self.menu.addAction(self.actionCopyZH)
         self.menu.addAction(self.actionAuto_Copy_EN)
         self.menu.addAction(self.actionClose_Mouse_Selection)
         self.menu.addAction(self.actionChatGPT_Stream)
         self.menu.addAction(self.actionCancel_Mouse_Backstage)
+        self.menusettings.addAction(self.actionproxy)
+        self.menuView.addAction(self.actionFont)
+        self.menuView.addAction(self.actionJust_ZH)
+        self.menuView.addAction(self.actionJust_EN)
+        self.menuView.addAction(self.actionRestore)
+        self.menuHelp.addAction(self.actionAbout)
+        self.menuHelp.addAction(self.actionManual)
         self.toolBar.addSeparator()
 
         self.retranslateUi(MainWindow)
 
         QMetaObject.connectSlotsByName(MainWindow)
+
     # setupUi
 
     def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"MainWindow", None))
-        self.actionCopyZH.setText(QCoreApplication.translate("MainWindow", u"Copy zhCN", None))
-        self.actionAuto_Copy_EN.setText(QCoreApplication.translate("MainWindow", u"Auto Copy EN", None))
-        self.actionClose_Mouse_Selection.setText(QCoreApplication.translate("MainWindow", u"Close Mouse Selection", None))
-        self.actionChatGPT_Stream.setText(QCoreApplication.translate("MainWindow", u"ChatGPT Stream", None))
-        self.actionCancel_Mouse_Backstage.setText(QCoreApplication.translate("MainWindow", u"Cancel Mouse Backstage", None))
+        MainWindow.setWindowTitle(
+            QCoreApplication.translate("MainWindow", u"MainWindow", None)
+        )
+        self.actionCopyZH.setText(
+            QCoreApplication.translate("MainWindow", u"Copy zhCN", None)
+        )
+        self.actionAuto_Copy_EN.setText(
+            QCoreApplication.translate("MainWindow", u"Auto Copy EN", None)
+        )
+        self.actionClose_Mouse_Selection.setText(
+            QCoreApplication.translate("MainWindow", u"Close Mouse Selection", None)
+        )
+        self.actionChatGPT_Stream.setText(
+            QCoreApplication.translate("MainWindow", u"ChatGPT Stream", None)
+        )
+        self.actionCancel_Mouse_Backstage.setText(
+            QCoreApplication.translate("MainWindow", u"Cancel Mouse Backstage", None)
+        )
+        self.actionproxy.setText(
+            QCoreApplication.translate("MainWindow", u"proxy", None)
+        )
+        self.actionFont.setText(QCoreApplication.translate("MainWindow", u"Font", None))
+        self.actionJust_ZH.setText(
+            QCoreApplication.translate("MainWindow", u"Just ZH", None)
+        )
+        self.actionJust_EN.setText(
+            QCoreApplication.translate("MainWindow", u"Just EN", None)
+        )
+        self.actionRestore.setText(
+            QCoreApplication.translate("MainWindow", u"Restore", None)
+        )
+        self.actionAbout.setText(
+            QCoreApplication.translate("MainWindow", u"About", None)
+        )
+        self.actionManual.setText(
+            QCoreApplication.translate("MainWindow", u"Manual", None)
+        )
         self.statusEN.setText("")
-        self.googleBtn.setText(QCoreApplication.translate("MainWindow", u"Google", None))
+        self.googleBtn.setText(
+            QCoreApplication.translate("MainWindow", u"Google", None)
+        )
         self.deeplBtn.setText(QCoreApplication.translate("MainWindow", u"DeepL", None))
-        self.chatgptBtn.setText(QCoreApplication.translate("MainWindow", u"ChatGPT", None))
-        self.enBtn.setText(QCoreApplication.translate("MainWindow", u"\u82f1\u8bd1\u6c49", None))
-        self.zhBtn.setText(QCoreApplication.translate("MainWindow", u"\u6c49\u8bd1\u82f1", None))
+        self.chatgptBtn.setText(
+            QCoreApplication.translate("MainWindow", u"ChatGPT", None)
+        )
+        self.enBtn.setText(
+            QCoreApplication.translate("MainWindow", u"\u82f1\u8bd1\u6c49", None)
+        )
+        self.zhBtn.setText(
+            QCoreApplication.translate("MainWindow", u"\u6c49\u8bd1\u82f1", None)
+        )
         self.allBtn.setText(QCoreApplication.translate("MainWindow", u"All", None))
         self.exitBtn.setText(QCoreApplication.translate("MainWindow", u"Exit", None))
         self.menu.setTitle(QCoreApplication.translate("MainWindow", u"Operation", None))
-        self.toolBar.setWindowTitle(QCoreApplication.translate("MainWindow", u"toolBar", None))
-    # retranslateUi
+        self.menusettings.setTitle(
+            QCoreApplication.translate("MainWindow", u"Settings", None)
+        )
+        self.menuView.setTitle(QCoreApplication.translate("MainWindow", u"View", None))
+        self.menuHelp.setTitle(QCoreApplication.translate("MainWindow", u"Help", None))
+        self.toolBar.setWindowTitle(
+            QCoreApplication.translate("MainWindow", u"toolBar", None)
+        )
 
+    # retranslateUi
