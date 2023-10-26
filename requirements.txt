@@ -1,5 +1,5 @@
 requests
 openai
-pyside6
+pyqt5
 pyperclip
 pynput
