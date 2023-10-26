@@ -21,7 +21,7 @@
        <widget class="QTextBrowser" name="outputZH">
         <property name="font">
          <font>
-          <family>黑体</family>
+          <family>Noto Serif CJK TC</family>
           <pointsize>13</pointsize>
          </font>
         </property>
@@ -31,7 +31,7 @@
        <widget class="QTextBrowser" name="outputEN">
         <property name="font">
          <font>
-          <family>宋体</family>
+          <family>Arial</family>
           <pointsize>13</pointsize>
          </font>
         </property>
@@ -41,7 +41,7 @@
        <widget class="QPlainTextEdit" name="inputEN">
         <property name="font">
          <font>
-          <family>宋体</family>
+          <family>Arial</family>
           <pointsize>13</pointsize>
          </font>
         </property>
@@ -51,8 +51,11 @@
        <widget class="QPlainTextEdit" name="inputZH">
         <property name="font">
          <font>
-          <family>黑体</family>
+          <family>Noto Serif CJK TC</family>
           <pointsize>13</pointsize>
+          <weight>50</weight>
+          <italic>false</italic>
+          <bold>false</bold>
          </font>
         </property>
        </widget>
@@ -155,7 +158,7 @@
      <x>0</x>
      <y>0</y>
      <width>971</width>
-     <height>26</height>
+     <height>28</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu">
@@ -168,7 +171,15 @@
     <addaction name="actionChatGPT_Stream"/>
     <addaction name="actionCancel_Mouse_Backstage"/>
    </widget>
+   <widget class="QMenu" name="menumode">
+    <property name="title">
+     <string>mode</string>
+    </property>
+    <addaction name="actionZH2EN_only"/>
+    <addaction name="actionEN2ZH_only"/>
+   </widget>
    <addaction name="menu"/>
+   <addaction name="menumode"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <widget class="QToolBar" name="toolBar">
@@ -227,6 +238,30 @@
    </property>
    <property name="text">
     <string>Cancel Mouse Backstage</string>
+   </property>
+  </action>
+  <action name="actionZH2EN_only">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>zh2en only</string>
+   </property>
+  </action>
+  <action name="actionEN2ZH_only">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>en2zh only</string>
+   </property>
+  </action>
+  <action name="actionBoth">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>both</string>
    </property>
   </action>
  </widget>

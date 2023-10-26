@@ -1,4 +1,4 @@
-'''
+"""
 Author: brilliantrough pzyinnju@163.com
 Date: 2023-06-29 00:09:28
 LastEditors: brilliantrough pzyinnju@163.com
@@ -7,20 +7,22 @@ FilePath: \googletranslate\translate_ui\mainwindow.py
 Description: 
 
 Copyright (c) 2023 by {brilliantrough pzyinnju@163.com}, All Rights Reserved. 
-'''
+"""
 
 from deepL_trans import DeepL
 from google_trans import Google
 from chatgpt_trans import ChatGPT
 from form_ui import Ui_MainWindow
 
-from PySide6.QtGui import QKeyEvent, QIcon, QHideEvent, QShowEvent
-from PySide6.QtCore import Qt, QThread, Signal, Slot, QObject, QSize
-from PySide6.QtWidgets import QApplication, QMainWindow
+from PyQt5.QtGui import QKeyEvent, QIcon, QHideEvent, QShowEvent
+from PyQt5.QtCore import Qt, QThread, pyqtSignal, pyqtSlot, QObject, QSize
+from PyQt5.QtWidgets import QApplication, QMainWindow
 from mouse_listen import MouseListener
 import os
 import icon_rc
 import warnings
+
+# import markdown
 
 warnings.filterwarnings("ignore")
 
@@ -35,8 +37,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.setupUi(self)
         self.clipboard = None
         self.engine = None
-        self.zh2en = None
-        self.en2zh = None
+        self.zh2en: ZH2EN = None
+        self.en2zh: EN2ZH = None
         self.reserve_flag = False
         self.initVariables()
         self.initButtons()
@@ -53,7 +55,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def initActions(self):
         self.actionCopyZH.triggered.connect(self.copyZH)
         self.actionChatGPT_Stream.triggered.connect(self.setChatGPTStream)
-        self.actionClose_Mouse_Selection.triggered.connect(self.closeMouseSelection)
+        self.actionClose_Mouse_Selection.toggled.connect(self.closeMouseSelection)
+        self.actionEN2ZH_only.triggered.connect(self.setEN2ZHOnly)
+        self.actionZH2EN_only.triggered.connect(self.setZH2ENOnly)
 
     def initButtons(self):
         self.inputEN.installEventFilter(self)
@@ -68,7 +72,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.allBtn.clicked.connect(self.translateAll)
 
     def initWindows(self):
-        self.setWindowFlags(Qt.WindowStaysOnTopHint)
+        # self.setWindowFlags(Qt.WindowStaysOnTopHint)  # make the window on the top
         self.setWindowTitle("不太全能的翻译-pezayo")
         self.setIcon(":/icon/candy.ico")
 
@@ -87,8 +91,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         Args:
             icon_path (str): 图标的 qrc 路径
         """
-        icon = QIcon()
-        icon.addFile(icon_path, QSize(), QIcon.Normal, QIcon.On)
+        icon = QIcon(icon_path)
+        # icon.addFile(icon_path, QSize(), QIcon.Normal, QIcon.On)
         self.setWindowIcon(icon)
 
     def zh2enTranslate(self):
@@ -127,14 +131,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.googleBtn.setEnabled(True)
         self.engine = "chatgpt"
 
-    @Slot(str, str)
+    @pyqtSlot(str, str)
     def getOutputZH(self, result: str, status: str):
         self.outputZH.insertPlainText(result)
+        # self.outputZH.insertHtml(markdown.markdown(result))
         self.statusEN.setText(status)
 
-    @Slot(str, str)
+    @pyqtSlot(str, str)
     def getOutputEN(self, result: str, status: str):
         self.outputEN.insertPlainText(result)
+        # self.outputEN.insertHtml(markdown.markdown(result))
         self.statusZH.setText(status)
         self.autoCopyEN()
 
@@ -159,8 +165,38 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         global stream
         stream = self.actionChatGPT_Stream.isChecked()
 
+    def setEN2ZHOnly(self):
+        print("emit en2zh")
+        if self.actionEN2ZH_only.isChecked():
+            self.outputZH.show()
+            self.inputEN.show()
+            self.outputEN.hide()
+            self.inputZH.hide()
+            if self.actionZH2EN_only.isChecked():
+                self.actionZH2EN_only.setChecked(False)
+        else:
+            self.outputZH.show()
+            self.inputEN.show()
+            self.outputEN.show()
+            self.inputZH.show()
+
+    def setZH2ENOnly(self):
+        print("emit zh2en")
+        if self.actionZH2EN_only.isChecked():
+            self.outputZH.hide()
+            self.inputEN.hide()
+            self.outputEN.show()
+            self.inputZH.show()
+            if self.actionEN2ZH_only.isChecked():
+                self.actionEN2ZH_only.setChecked(False)
+        else:
+            self.outputZH.show()
+            self.inputEN.show()
+            self.outputEN.show()
+            self.inputZH.show()
+
     def eventFilter(self, obj, event):
-        """ 重写事件过滤器，用来实现 shift+enter 换行，enter 翻译
+        """重写事件过滤器，用来实现 shift+enter 换行，enter 翻译
 
         Args:
             obj (QWidget):  事件发生的对象
@@ -169,11 +205,19 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         Returns:
             bool:  是否拦截事件
         """
-        if event.type() == QKeyEvent.KeyPress and event.key() == Qt.Key_Space and event.modifiers() == (   Qt.ShiftModifier):
+        if (
+            event.type() == QKeyEvent.KeyPress
+            and event.key() == Qt.Key_Space
+            and event.modifiers() == (Qt.ShiftModifier)
+        ):
             self.actionClose_Mouse_Selection.trigger()
             return True
         if obj == self.inputZH or obj == self.inputEN:
-            if event.type() == QKeyEvent.KeyPress and event.key() == Qt.Key_Return and event.modifiers() == Qt.ShiftModifier:
+            if (
+                event.type() == QKeyEvent.KeyPress
+                and event.key() == Qt.Key_Return
+                and event.modifiers() == Qt.ShiftModifier
+            ):
                 obj.insertPlainText("\n")
                 return True
             elif event.type() == QKeyEvent.KeyPress and event.key() == Qt.Key_Return:
@@ -187,7 +231,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         return False
 
     def hideEvent(self, event: QHideEvent) -> None:
-        if not self.actionClose_Mouse_Selection.isChecked() and self.actionCancel_Mouse_Backstage.isChecked():
+        if (
+            not self.actionClose_Mouse_Selection.isChecked()
+            and self.actionCancel_Mouse_Backstage.isChecked()
+        ):
             self.actionClose_Mouse_Selection.trigger()
             self.reserve_flag = True
         super().hideEvent(event)
@@ -207,10 +254,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 class ZH2ENThread(QObject):
     # Define a new signal called 'task' that takes no parameters.
-    task = Signal(str, str)
-    translate_finished = Signal(str, str)
+    task = pyqtSignal(str, str)
+    translate_finished = pyqtSignal(str, str)
 
-    @Slot()
+    @pyqtSlot(str, str)
     def do_work(self, engine: str, text):
         if engine == "google":
             tempgoogle = Google()
@@ -227,7 +274,9 @@ class ZH2ENThread(QObject):
             if stream:
                 for i in result:
                     try:
-                        self.translate_finished.emit(i.choices[0]["delta"]["content"], status)
+                        self.translate_finished.emit(
+                            i.choices[0]["delta"]["content"], status
+                        )
                     except Exception:
                         return
             else:
@@ -253,10 +302,10 @@ class ZH2EN(QObject):
 
 class EN2ZHThread(QObject):
     # Define a new signal called 'task' that takes no parameters.
-    task = Signal(str, str)
-    translate_finished = Signal(str, str)
+    task = pyqtSignal(str, str)
+    translate_finished = pyqtSignal(str, str)
 
-    @Slot()
+    @pyqtSlot(str, str)
     def do_work(self, engine: str, text: str):
         if engine == "google":
             tempgoogle = Google()
@@ -273,7 +322,9 @@ class EN2ZHThread(QObject):
             if stream:
                 for i in result:
                     try:
-                        self.translate_finished.emit(i.choices[0]["delta"]["content"], status)
+                        self.translate_finished.emit(
+                            i.choices[0]["delta"]["content"], status
+                        )
                     except Exception:
                         return
             else:
@@ -298,7 +349,7 @@ class EN2ZH(QObject):
 
 
 class SelectTextThread(QThread):
-    select_finished = Signal(str)
+    select_finished = pyqtSignal(str)
 
     def __init__(self, parent=None):
         super(SelectTextThread, self).__init__(parent)
