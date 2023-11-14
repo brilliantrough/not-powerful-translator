@@ -1,9 +1,9 @@
 <!--
  * @Author: brilliantrough pzyinnju@163.com
  * @Date: 2023-07-10 21:04:19
- * @LastEditors: pezayo-physical pzyinnju@163.com
- * @LastEditTime: 2023-10-26 18:07:13
- * @FilePath: /not-powerful-translator-pyqt5/CHANGELOG
+ * @LastEditors: brilliantrough pzyinnju@163.com
+ * @LastEditTime: 2023-11-14 22:48:45
+ * @FilePath: \not-powerful-translator\CHANGELOG
  * @Description: 
  * 
  * Copyright (c) 2023 by {brilliantrough pzyinnju@163.com}, All Rights Reserved. 
@@ -35,3 +35,17 @@
 
 + 将 Linux 上的实现的小更新合并到 Windows 上
 + 继续实现代理设置，字体设置
+
+# v1.2
+
++ 进行 Windows 版本将 Linux 版本功能合并
++ 实现了代理设置和字体设置
++ 将界面改为左右界面
++ 实现了仅展示单向翻译界面
++ 更新了弹窗字体
++ 修复了一些小 bug
+
+## TODO
+
++ 将新功能合并到 Linux 版本上去
++ 尽量使操作更简洁化

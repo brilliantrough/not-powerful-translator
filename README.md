@@ -1,24 +1,14 @@
-<!--
- * @Author: brilliantrough pzyinnju@163.com
- * @Date: 2023-07-10 20:20:22
- * @LastEditors: pezayo-physical pzyinnju@163.com
- * @LastEditTime: 2023-10-26 18:08:08
- * @FilePath: /not-powerful-translator-pyqt5/README.md
- * @Description:  
- * 
- * Copyright (c) 2023 by {brilliantrough pzyinnju@163.com}, All Rights Reserved. 
--->
 # 全能翻译
 
 > 本项目志在制作一个全能的翻译，现在由于功能不是很全，于是先把名字叫做不太全能的翻译。
 
 本项目完全由 `Python` + `Qt` 进行编写，至于为什么用 `Python`，这是因为作者只会 `Python` 不会 `Typescript` 等语言。
 
-(v1.1) ~~目前只在 Windows 系统上运行， Linux 系统上稍后发布。~~ 已经发布了 Linux 版本，Windows 版本暂未更新
+(v1.2) Windows 版本已经大幅更新，Linux 版本还在上个版本 v1.1
 
 ## 简单使用
 
-如果运行 Python 工程需要先进行环境配置。另外可以直接运行使用 `pyinstaller` 打包好的可执行文件（40多MB大小）。
+如果运行 Python 工程需要先进行环境配置。另外可以直接运行使用 `pyinstaller` 打包好的可执行文件（~~40多MB大小~~ 现在是80MB）。
 
 > Linux 打包完有 80 MB大小
 
@@ -40,9 +30,11 @@ pip install -r requirements.txt
 
 要想使用 ChatGPT 的翻译引擎，需要在环境变量（注意，不是 PATH，而是和 PATH 同一级的环境变量）中添加名为 `OPENAI_API_KEY` 的环境变量，其中填入你的 key 就行，[OPENAI 官网](https://platform.openai.com/account/api-keys) 可以生成对应的 key。
 
+目前兼容了其他平台的 API，如 `closeai`，只需要按照官网上的内容在环境变量中设置相应的 `OPENAI_API_KEY` 和 `OPENAI_API_BASE` 即可。
+
 ## UI 介绍
 
-这个界面做的相对简洁，总共可以看到四个框，下面两个分别为英文，中文的输入框，上面两个对应中文和英文的翻译结果。
+这个界面做的相对简洁，总共可以看到四个框，~~下面两个分别为英文，中文的输入框，上面两个对应中文和英文的翻译结果。~~ 现在更新为左右结构，上面两个框对应左边中文输入，右边英文输出，下面两个框对应左边英文输入，右边中文输出。
 
 ### 按钮
 
@@ -65,3 +57,12 @@ pip install -r requirements.txt
 1. `zh2en only`： 只展示中文翻译成英文的面板，隐藏其他面板
 2. `en2zh only`： 只展示英文翻译成中文的面板，隐藏其他面板
 
+在 Settings 中设置了两个选项
+
+1. `Proxy`： 手动设置代理，默认使用 http 代理，输入时只需要输入 `地址:端口` 即可
+2. `Check Proxy`： 查看当前使用的代理，没有代理就是默认系统代理
+
+在 View 中设置了多个选项
+
+1. `Font`： 用于设置字体，可单独设置中文和英文输入/输出框的字体
+2. 其他选项： 暂无用处，保留选项
