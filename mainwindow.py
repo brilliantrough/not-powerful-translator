@@ -9,24 +9,47 @@ Description:
 Copyright (c) 2023 by {brilliantrough pzyinnju@163.com}, All Rights Reserved. 
 """
 
-from deepL_trans import DeepL
-from google_trans import Google
-from chatgpt_trans import ChatGPT
-from form_ui import Ui_MainWindow
-
-from PySide6.QtGui import QKeyEvent, QIcon, QHideEvent, QShowEvent
-from PySide6.QtCore import Qt, QThread, Signal, Slot, QObject, QSize
-from PySide6.QtWidgets import QApplication, QMainWindow
-from mouse_listen import MouseListener
-import os
-import icon_rc
+import re
 import warnings
+
+from PySide6.QtCore import Qt, QThread, Signal, Slot, QObject, QSize, QUrl
+from PySide6.QtGui import QKeyEvent, QIcon, QHideEvent, QShowEvent, QDesktopServices
+from PySide6.QtWidgets import QApplication, QMainWindow, QInputDialog, QMessageBox
+
+from chatgpt_trans import ChatGPT
+from deepL_trans import DeepL
+from form_ui import Ui_MainWindow
+from google_trans import Google
+from mouse_listen import MouseListener
+
+
+def check_ip(string: str) -> bool:
+    """判断是否为 ip 地址加端口号的形式
+
+    Args:
+        string (str): 待测代理地址
+
+    Returns:
+        bool: 返回真或假
+    """
+    pattern = r'^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}:\d+$'
+    return re.match(pattern, string) is not None
+
 
 warnings.filterwarnings("ignore")
 
+version = "1.0.1"
+proxies = None
 google = Google()
 deepl = DeepL()
 stream: bool = True
+
+ABOUT = f"""
+不太全能的翻译(not powerful translator){version}
+暂无任何许可证
+作者：brilliantrough/pezayo
+速速去github给我点个star吧
+"""
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
@@ -54,6 +77,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.actionCopyZH.triggered.connect(self.copyZH)
         self.actionChatGPT_Stream.triggered.connect(self.setChatGPTStream)
         self.actionClose_Mouse_Selection.triggered.connect(self.closeMouseSelection)
+        self.actionProxy.triggered.connect(self.setProxy)
+        self.actionCheck_Proxy.triggered.connect(self.checkProxy)
+        self.actionAbout.triggered.connect(self.aboutPopup)
+        self.actionManual.triggered.connect(self.openManual)
 
     def initButtons(self):
         self.inputEN.installEventFilter(self)
@@ -159,6 +186,25 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         global stream
         stream = self.actionChatGPT_Stream.isChecked()
 
+    def setProxy(self):
+        proxy, ok = QInputDialog.getText(self, "设置代理", "请输入代理地址，例如：127.0.0.1:7890")
+        proxy = str(proxy)
+        global proxies
+        if ok and check_ip(proxy):
+            proxies = {"http": "http://" + proxy, "https": "https://" + proxy}
+            QMessageBox.information(self, "设置代理", "代理成功设置为：http://" + proxy)
+        else:
+            pass
+
+    def checkProxy(self):
+        QMessageBox.information(self, "检查代理", "当前代理为：" + (proxies["http"] if proxies else "使用系统代理"))
+
+    def aboutPopup(self):
+        QMessageBox.about(self, "关于", ABOUT)
+
+    def openManual(self):
+        QDesktopServices.openUrl(QUrl("https://github.com/brilliantrough/not-powerful-translator"))
+
     def eventFilter(self, obj, event):
         """重写事件过滤器，用来实现 shift+enter 换行，enter 翻译
 
@@ -170,17 +216,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             bool:  是否拦截事件
         """
         if (
-            event.type() == QKeyEvent.KeyPress
-            and event.key() == Qt.Key_Space
-            and event.modifiers() == (Qt.ShiftModifier)
+                event.type() == QKeyEvent.KeyPress
+                and event.key() == Qt.Key_Space
+                and event.modifiers() == (Qt.ShiftModifier)
         ):
             self.actionClose_Mouse_Selection.trigger()
             return True
         if obj == self.inputZH or obj == self.inputEN:
             if (
-                event.type() == QKeyEvent.KeyPress
-                and event.key() == Qt.Key_Return
-                and event.modifiers() == Qt.ShiftModifier
+                    event.type() == QKeyEvent.KeyPress
+                    and event.key() == Qt.Key_Return
+                    and event.modifiers() == Qt.ShiftModifier
             ):
                 obj.insertPlainText("\n")
                 return True
@@ -196,8 +242,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def hideEvent(self, event: QHideEvent) -> None:
         if (
-            not self.actionClose_Mouse_Selection.isChecked()
-            and self.actionCancel_Mouse_Backstage.isChecked()
+                not self.actionClose_Mouse_Selection.isChecked()
+                and self.actionCancel_Mouse_Backstage.isChecked()
         ):
             self.actionClose_Mouse_Selection.trigger()
             self.reserve_flag = True

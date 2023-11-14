@@ -172,7 +172,8 @@
     <property name="title">
      <string>Settings</string>
     </property>
-    <addaction name="actionproxy"/>
+    <addaction name="actionProxy"/>
+    <addaction name="actionCheck_Proxy"/>
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
@@ -254,9 +255,9 @@
     <string>Cancel Mouse Backstage</string>
    </property>
   </action>
-  <action name="actionproxy">
+  <action name="actionProxy">
    <property name="text">
-    <string>proxy</string>
+    <string>Proxy</string>
    </property>
   </action>
   <action name="actionFont">
@@ -287,6 +288,11 @@
   <action name="actionManual">
    <property name="text">
     <string>Manual</string>
+   </property>
+  </action>
+  <action name="actionCheck_Proxy">
+   <property name="text">
+    <string>Check Proxy</string>
    </property>
   </action>
  </widget>
