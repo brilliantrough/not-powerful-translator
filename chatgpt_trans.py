@@ -3,7 +3,7 @@ Author: brilliantrough pzyinnju@163.com
 Date: 2023-06-29 18:37:40
 LastEditors: brilliantrough pzyinnju@163.com
 LastEditTime: 2023-07-10 20:15:29
-FilePath: \googletranslate\translate_ui\chatgpt_trans.py
+FilePath: \not-powerful-translator\chatgpt_trans.py
 Description: 定义 ChatGPT 翻译类，其中根据翻译类型定义了两个翻译方法，分别为中文翻译为英文和英文翻译为中文；并以此定义了两个翻译提示。
 同时还安排了两种翻译方式，一种是普通的请求方式，一种是流的方式，流的方式可以实现实时翻译，默认使用此方式。
 
@@ -18,17 +18,16 @@ prompt_zh2en = "You should act as an English translator, spelling corrector and 
 
 prompt_en2zh = "You should act as a Chinese translator, spelling corrector and improver. The user will speak to you in any language and you will detect the language, translate it and answer in the corrected and improved version of my text, in Chinese. You should only reply the correction, the improvements and nothing else, do not write explanations. Your goal is to ensure that the translation is as smooth and natural as possible, while not changing the meaning of the text."
 
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 # TODO: 代理设置，是否使用代理，手动设置代理，自动设置代理
 class ChatGPT:
     def __init__(self):
-        self.headers = {"Authorization": f"Bearer {OPENAI_API_KEY}"}
+        self.headers = {"Authorization": f"Bearer {openai.api_key}"}
         self.proxies = {
             "https": "http://127.0.0.1:7890",
             "http": "http://127.0.0.1:7890",
         }
-        self.url = "https://api.openai.com/v1/chat/completions"
+        self.url = f"{openai.api_base}/chat/completions"
         self.data = {
             "model": "gpt-3.5-turbo",
             "messages": [
@@ -37,7 +36,12 @@ class ChatGPT:
             ],
         }
         self.retry_nums = 3
-        openai.api_key = f"{OPENAI_API_KEY}"
+        
+    def setProxy(self, address: str = "127.0.0.1", port: int = 7890, unset: bool = False):
+        if unset:
+            self.proxies = None
+            return
+        self.proxies = {"https": f"http://{address}:{port}", "http": f"http://{address}:{port}"}
 
     def chatgpt(self, prompt: str, text: str, stream: bool = False) -> tuple:
         """翻译文本
@@ -63,6 +67,7 @@ class ChatGPT:
                     headers=self.headers,
                     proxies=self.proxies,
                     json=self.data,
+                    timeout=40,
                 )
                 if response.status_code == 200:
                     result = response.json()["choices"][0]["message"]["content"]
@@ -88,6 +93,7 @@ class ChatGPT:
         i = 0
         while i < self.retry_nums:
             try:
+                openai.proxy = self.proxies['http'] if self.proxies else None
                 completion = openai.ChatCompletion.create(
                     model="gpt-3.5-turbo",
                     messages=[
@@ -95,6 +101,7 @@ class ChatGPT:
                         {"role": "user", "content": text},
                     ],
                     stream=True,
+                    timeout=10,
                 )
                 return completion, "成功"
             except Exception as e:

@@ -25,20 +25,20 @@ def Timer(func):
     return wrapper
 
 
-# TODO: 代理设置，是否使用代理，手动设置代理，自动设置代理
 # BUG: 这里存在一些问题，通过模拟浏览器请求有时无法成功，甚至可能会导致自己当前的浏览器无法访问 deepL 网站
 # NOTE: 这里会使用到 deepL 的 jsonrpc 接口，但是这个接口是通过浏览器访问的，所以需要模拟浏览器请求。同时也会消耗 DeepL 的免费额度。
 class DeepL:
     time: float = 0.0
 
     def __init__(self) -> None:
-        self.port = 7890
-        self.address = "127.0.0.1"
+        self.proxies: dict = None
         self.retry_nums = 3
 
-    def setProxy(self, address: str, port: int) -> None:
-        self.address = address
-        self.port = port
+    def setProxy(self, address: str = "127.0.0.1", port: int = 7890, unset: bool = False) -> None:
+        if unset:
+            self.proxies = None
+            return
+        self.proxies = {"http": f"http://{address}:{port}", "https": f"http://{address}:{port}"}
 
     @Timer
     def deepL(self, text: str, src: str = "ZH", dst: str = "EN") -> tuple:
@@ -82,16 +82,12 @@ class DeepL:
             },
             "id": 123456,
         }
-        proxies = {
-            "https": f"http://{self.address}:{self.port}",
-            "http": f"http://{self.address}:{self.port}",
-        }
 
         i = 0
         while i < self.retry_nums:
             try:
                 response = requests.post(
-                    url, headers=headers, proxies=proxies, json=data
+                    url, headers=headers, proxies=self.proxies, json=data
                 )
 
                 if response.status_code == 200:

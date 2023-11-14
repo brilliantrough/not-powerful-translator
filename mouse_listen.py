@@ -109,6 +109,8 @@ class MouseListener(QThread):
 
     def pause(self):
         """pause the mouse listener"""
+        if not self.listener:
+            return
         mouse.Listener.stop(self.listener)
         mouse.Listener.join(self.listener)
         self.listener = None

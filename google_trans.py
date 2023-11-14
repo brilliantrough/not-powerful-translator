@@ -2,22 +2,12 @@
 Author: brilliantrough pzyinnju@163.com
 Date: 2023-06-28 22:24:30
 LastEditors: brilliantrough pzyinnju@163.com
-LastEditTime: 2023-07-12 11:38:13
-FilePath: \translate_ui\google_trans.py
-Description: 
-
-Copyright (c) 2023 by {brilliantrough pzyinnju@163.com}, All Rights Reserved. 
-'''
-"""
-Author: brilliantrough pzyinnju@163.com
-Date: 2023-06-28 23:04:57
-LastEditors: brilliantrough pzyinnju@163.com
-LastEditTime: 2023-07-12 11:32:28
-FilePath: \translate_ui\google_trans.py
+LastEditTime: 2023-11-14 22:42:11
+FilePath: \not-powerful-translator\google_trans.py
 Description: 定义了 Google 翻译类，其中定义了翻译方法 google，以及设置代理方法 setProxy。
 
 Copyright (c) 2023 by {brilliantrough pzyinnju@163.com}, All Rights Reserved. 
-"""
+'''
 
 import requests
 from requests.exceptions import RequestException
@@ -35,7 +25,6 @@ def Timer(func):
     return wrapper
 
 
-# TODO: 代理设置，是否使用代理，手动设置代理，自动设置代理
 class Google:
     time: float = 0.0
 
@@ -77,7 +66,7 @@ class Google:
         self.params["sl"] = src
         self.params["tl"] = dst
         self.params["q"] = text
-        kw = {"url": self.url, "params": self.params, "proxies": self.proxies}
+        kw = {"url": self.url, "params": self.params, "proxies": self.proxies, "timeout": 10}
         i = 0
         while i < self.retry_nums:
             try:
