@@ -36,6 +36,8 @@ def check_ip(string: str) -> bool:
     return re.match(pattern, string) is not None
 
 
+# import markdown
+
 warnings.filterwarnings("ignore")
 
 version = "1.0.1"
@@ -58,8 +60,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.setupUi(self)
         self.clipboard = None
         self.engine = None
-        self.zh2en = None
-        self.en2zh = None
+        self.zh2en: ZH2EN = None
+        self.en2zh: EN2ZH = None
         self.reserve_flag = False
         self.initVariables()
         self.initButtons()
@@ -81,6 +83,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.actionCheck_Proxy.triggered.connect(self.checkProxy)
         self.actionAbout.triggered.connect(self.aboutPopup)
         self.actionManual.triggered.connect(self.openManual)
+        self.actionClose_Mouse_Selection.toggled.connect(self.closeMouseSelection)
+        self.actionEN2ZH_only.triggered.connect(self.setEN2ZHOnly)
+        self.actionZH2EN_only.triggered.connect(self.setZH2ENOnly)
 
     def initButtons(self):
         self.inputEN.installEventFilter(self)
@@ -95,7 +100,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.allBtn.clicked.connect(self.translateAll)
 
     def initWindows(self):
-        self.setWindowFlags(Qt.WindowStaysOnTopHint)
+        # self.setWindowFlags(Qt.WindowStaysOnTopHint)  # make the window on the top
         self.setWindowTitle("不太全能的翻译-pezayo")
         self.setIcon(":/icon/candy.ico")
 
@@ -162,6 +167,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     @Slot(str, str)
     def getOutputEN(self, result: str, status: str):
         self.outputEN.insertPlainText(result)
+        # self.outputEN.insertHtml(markdown.markdown(result))
         self.statusZH.setText(status)
         self.autoCopyEN()
 
@@ -204,6 +210,35 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def openManual(self):
         QDesktopServices.openUrl(QUrl("https://github.com/brilliantrough/not-powerful-translator"))
+    def setEN2ZHOnly(self):
+        print("emit en2zh")
+        if self.actionEN2ZH_only.isChecked():
+            self.outputZH.show()
+            self.inputEN.show()
+            self.outputEN.hide()
+            self.inputZH.hide()
+            if self.actionZH2EN_only.isChecked():
+                self.actionZH2EN_only.setChecked(False)
+        else:
+            self.outputZH.show()
+            self.inputEN.show()
+            self.outputEN.show()
+            self.inputZH.show()
+
+    def setZH2ENOnly(self):
+        print("emit zh2en")
+        if self.actionZH2EN_only.isChecked():
+            self.outputZH.hide()
+            self.inputEN.hide()
+            self.outputEN.show()
+            self.inputZH.show()
+            if self.actionEN2ZH_only.isChecked():
+                self.actionEN2ZH_only.setChecked(False)
+        else:
+            self.outputZH.show()
+            self.inputEN.show()
+            self.outputEN.show()
+            self.inputZH.show()
 
     def eventFilter(self, obj, event):
         """重写事件过滤器，用来实现 shift+enter 换行，enter 翻译
@@ -216,17 +251,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             bool:  是否拦截事件
         """
         if (
-                event.type() == QKeyEvent.KeyPress
-                and event.key() == Qt.Key_Space
-                and event.modifiers() == (Qt.ShiftModifier)
+            event.type() == QKeyEvent.KeyPress
+            and event.key() == Qt.Key_Space
+            and event.modifiers() == (Qt.ShiftModifier)
         ):
             self.actionClose_Mouse_Selection.trigger()
             return True
         if obj == self.inputZH or obj == self.inputEN:
             if (
-                    event.type() == QKeyEvent.KeyPress
-                    and event.key() == Qt.Key_Return
-                    and event.modifiers() == Qt.ShiftModifier
+                event.type() == QKeyEvent.KeyPress
+                and event.key() == Qt.Key_Return
+                and event.modifiers() == Qt.ShiftModifier
             ):
                 obj.insertPlainText("\n")
                 return True
@@ -242,8 +277,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def hideEvent(self, event: QHideEvent) -> None:
         if (
-                not self.actionClose_Mouse_Selection.isChecked()
-                and self.actionCancel_Mouse_Backstage.isChecked()
+            not self.actionClose_Mouse_Selection.isChecked()
+            and self.actionCancel_Mouse_Backstage.isChecked()
         ):
             self.actionClose_Mouse_Selection.trigger()
             self.reserve_flag = True

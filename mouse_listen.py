@@ -15,6 +15,8 @@ from pynput.mouse import Controller as MouseController
 from pynput import mouse
 import time
 from threading import Condition
+import os
+from utils import Log
 
 from PySide6.QtCore import Signal, QThread
 
@@ -60,6 +62,7 @@ class MouseListener(QThread):
         self.listener = mouse.Listener(on_click=on_click)
         self.running: bool = True
         self.stop: bool = False
+        self.log = Log("log.txt")
 
     def run(self):
         """the main thread, to translate the selected text
@@ -121,6 +124,7 @@ class MouseListener(QThread):
             mouse.Listener.stop(self.listener)
             mouse.Listener.join(self.listener)
         self.stop = True
+        del self.log
         with cv:
             cv.notify_all()
         # time.sleep(0.1)

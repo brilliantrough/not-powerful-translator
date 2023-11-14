@@ -1,9 +1,9 @@
 <!--
  * @Author: brilliantrough pzyinnju@163.com
  * @Date: 2023-07-10 21:04:19
- * @LastEditors: brilliantrough pzyinnju@163.com
- * @LastEditTime: 2023-07-10 21:24:25
- * @FilePath: \translate_ui\CHANGELOG
+ * @LastEditors: pezayo-physical pzyinnju@163.com
+ * @LastEditTime: 2023-10-26 18:07:13
+ * @FilePath: /not-powerful-translator-pyqt5/CHANGELOG
  * @Description: 
  * 
  * Copyright (c) 2023 by {brilliantrough pzyinnju@163.com}, All Rights Reserved. 
@@ -24,3 +24,14 @@
 + 字体设置，目前采用的是中文黑体，英文宋体
 + UI 变化，目前 UI 不可变化，可通过选项变化设计成只进行汉译英或英译汉的 UI
 + logo 设置，目前使用糖果形状的 logo
+
+# v1.1
+
++ 实现了 Linux 上的版本，Windows 上版本小更新还未推送至仓库
++ Linux 上使用 PyQt5 进行重写
++ 实现了之前 TODO 中的 UI 变化要求
+
+## TODO
+
++ 将 Linux 上的实现的小更新合并到 Windows 上
++ 继续实现代理设置，字体设置

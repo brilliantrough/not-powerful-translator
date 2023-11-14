@@ -3,5 +3,9 @@ build
 __pycache__
 .idea
 .vscode
+.vim
+*.spec
+log.txt
+Session.vim
 demo.ipynb
 *.dll
