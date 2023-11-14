@@ -19,7 +19,6 @@ prompt_zh2en = "You should act as an English translator, spelling corrector and 
 prompt_en2zh = "You should act as a Chinese translator, spelling corrector and improver. The user will speak to you in any language and you will detect the language, translate it and answer in the corrected and improved version of my text, in Chinese. You should only reply the correction, the improvements and nothing else, do not write explanations. Your goal is to ensure that the translation is as smooth and natural as possible, while not changing the meaning of the text."
 
 
-# TODO: 代理设置，是否使用代理，手动设置代理，自动设置代理
 class ChatGPT:
     def __init__(self):
         self.headers = {"Authorization": f"Bearer {openai.api_key}"}
