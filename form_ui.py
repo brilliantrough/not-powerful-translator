@@ -16,16 +16,17 @@ from PySide6.QtGui import (QAction, QBrush, QColor, QConicalGradient,
     QIcon, QImage, QKeySequence, QLinearGradient,
     QPainter, QPalette, QPixmap, QRadialGradient,
     QTransform)
-from PySide6.QtWidgets import (QApplication, QGridLayout, QHBoxLayout, QLineEdit,
-    QMainWindow, QMenu, QMenuBar, QPlainTextEdit,
-    QPushButton, QSizePolicy, QStatusBar, QTextBrowser,
-    QToolBar, QVBoxLayout, QWidget)
+from PySide6.QtWidgets import (QApplication, QCheckBox, QGridLayout, QHBoxLayout,
+    QLineEdit, QMainWindow, QMenu, QMenuBar,
+    QPlainTextEdit, QPushButton, QSizePolicy, QStatusBar,
+    QTextBrowser, QToolBar, QVBoxLayout, QWidget)
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
-        MainWindow.resize(971, 716)
+        MainWindow.resize(900, 400)
+        MainWindow.setStyleSheet(u"")
         self.actionCopyZH = QAction(MainWindow)
         self.actionCopyZH.setObjectName(u"actionCopyZH")
         self.actionAuto_Copy_EN = QAction(MainWindow)
@@ -49,6 +50,7 @@ class Ui_MainWindow(object):
         self.actionEN2ZH_only = QAction(MainWindow)
         self.actionEN2ZH_only.setObjectName(u"actionEN2ZH_only")
         self.actionEN2ZH_only.setCheckable(True)
+        self.actionEN2ZH_only.setChecked(True)
         self.actionBoth = QAction(MainWindow)
         self.actionBoth.setObjectName(u"actionBoth")
         self.actionBoth.setCheckable(True)
@@ -81,18 +83,27 @@ class Ui_MainWindow(object):
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
         self.horizontalLayout = QHBoxLayout()
         self.horizontalLayout.setObjectName(u"horizontalLayout")
+        self.onTopCheckBox = QCheckBox(self.widget)
+        self.onTopCheckBox.setObjectName(u"onTopCheckBox")
+        font = QFont()
+        font.setFamilies([u"\u9ed1\u4f53"])
+        font.setPointSize(10)
+        self.onTopCheckBox.setFont(font)
+
+        self.horizontalLayout.addWidget(self.onTopCheckBox)
+
         self.statusEN = QLineEdit(self.widget)
         self.statusEN.setObjectName(u"statusEN")
-        font = QFont()
-        font.setFamilies([u"\u5b8b\u4f53"])
-        font.setPointSize(12)
-        self.statusEN.setFont(font)
+        font1 = QFont()
+        font1.setFamilies([u"\u5b8b\u4f53"])
+        font1.setPointSize(12)
+        self.statusEN.setFont(font1)
 
         self.horizontalLayout.addWidget(self.statusEN)
 
         self.statusZH = QLineEdit(self.widget)
         self.statusZH.setObjectName(u"statusZH")
-        self.statusZH.setFont(font)
+        self.statusZH.setFont(font1)
 
         self.horizontalLayout.addWidget(self.statusZH)
 
@@ -121,11 +132,6 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout.addWidget(self.zhBtn)
 
-        self.allBtn = QPushButton(self.widget)
-        self.allBtn.setObjectName(u"allBtn")
-
-        self.horizontalLayout.addWidget(self.allBtn)
-
         self.exitBtn = QPushButton(self.widget)
         self.exitBtn.setObjectName(u"exitBtn")
 
@@ -141,36 +147,48 @@ class Ui_MainWindow(object):
         self.gridLayout.setObjectName(u"gridLayout")
         self.inputEN = QPlainTextEdit(self.centralwidget)
         self.inputEN.setObjectName(u"inputEN")
-        font1 = QFont()
-        font1.setFamilies([u"Arial"])
-        font1.setPointSize(13)
-        self.inputEN.setFont(font1)
+        font2 = QFont()
+        font2.setFamilies([u"Microsoft YaHei"])
+        font2.setPointSize(11)
+        self.inputEN.setFont(font2)
+        self.inputEN.setStyleSheet(u"background-color: rgb(203, 203, 203);\n"
+"border-color: rgb(170, 0, 0);\n"
+"border-radius: 10px;")
 
         self.gridLayout.addWidget(self.inputEN, 1, 0, 1, 1)
 
         self.outputEN = QTextBrowser(self.centralwidget)
         self.outputEN.setObjectName(u"outputEN")
-        self.outputEN.setFont(font1)
+        self.outputEN.setFont(font2)
+        self.outputEN.setStyleSheet(u"background-color: rgb(203, 203, 203);\n"
+"border-color: rgb(170, 0, 0);\n"
+"border-radius: 10px;")
 
         self.gridLayout.addWidget(self.outputEN, 0, 1, 1, 1)
 
         self.inputZH = QPlainTextEdit(self.centralwidget)
         self.inputZH.setObjectName(u"inputZH")
-        font2 = QFont()
-        font2.setFamilies([u"\u5b8b\u4f53"])
-        font2.setPointSize(13)
-        self.inputZH.setFont(font2)
+        font3 = QFont()
+        font3.setFamilies([u"\u9ed1\u4f53"])
+        font3.setPointSize(13)
+        self.inputZH.setFont(font3)
+        self.inputZH.setStyleSheet(u"background-color: rgb(203, 203, 203);\n"
+"border-color: rgb(170, 0, 0);\n"
+"border-radius: 10px;")
 
         self.gridLayout.addWidget(self.inputZH, 0, 0, 1, 1)
 
         self.outputZH = QTextBrowser(self.centralwidget)
         self.outputZH.setObjectName(u"outputZH")
-        font3 = QFont()
-        font3.setFamilies([u"\u5b8b\u4f53"])
-        font3.setPointSize(13)
-        font3.setBold(False)
-        font3.setItalic(False)
-        self.outputZH.setFont(font3)
+        font4 = QFont()
+        font4.setFamilies([u"\u9ed1\u4f53"])
+        font4.setPointSize(13)
+        font4.setBold(False)
+        font4.setItalic(False)
+        self.outputZH.setFont(font4)
+        self.outputZH.setStyleSheet(u"background-color: rgb(203, 203, 203);\n"
+"border-color: rgb(170, 0, 0);\n"
+"border-radius: 10px;")
 
         self.gridLayout.addWidget(self.outputZH, 1, 1, 1, 1)
 
@@ -180,7 +198,7 @@ class Ui_MainWindow(object):
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName(u"menubar")
-        self.menubar.setGeometry(QRect(0, 0, 971, 26))
+        self.menubar.setGeometry(QRect(0, 0, 900, 26))
         self.menu = QMenu(self.menubar)
         self.menu.setObjectName(u"menu")
         self.menumode = QMenu(self.menubar)
@@ -249,13 +267,13 @@ class Ui_MainWindow(object):
         self.actionCheck_Proxy.setText(QCoreApplication.translate("MainWindow", u"Check Proxy", None))
         self.actionFontZH.setText(QCoreApplication.translate("MainWindow", u"Chinese font", None))
         self.actionFontEN.setText(QCoreApplication.translate("MainWindow", u"English font", None))
+        self.onTopCheckBox.setText(QCoreApplication.translate("MainWindow", u"\u754c\u9762\u7f6e\u9876", None))
         self.statusEN.setText("")
         self.googleBtn.setText(QCoreApplication.translate("MainWindow", u"Google", None))
         self.deeplBtn.setText(QCoreApplication.translate("MainWindow", u"DeepL", None))
         self.chatgptBtn.setText(QCoreApplication.translate("MainWindow", u"ChatGPT", None))
         self.enBtn.setText(QCoreApplication.translate("MainWindow", u"\u82f1\u8bd1\u6c49", None))
         self.zhBtn.setText(QCoreApplication.translate("MainWindow", u"\u6c49\u8bd1\u82f1", None))
-        self.allBtn.setText(QCoreApplication.translate("MainWindow", u"All", None))
         self.exitBtn.setText(QCoreApplication.translate("MainWindow", u"Exit", None))
         self.menu.setTitle(QCoreApplication.translate("MainWindow", u"Operation", None))
         self.menumode.setTitle(QCoreApplication.translate("MainWindow", u"mode", None))

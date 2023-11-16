@@ -6,12 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>971</width>
-    <height>716</height>
+    <width>900</width>
+    <height>400</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true"/>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout_2">
@@ -26,6 +29,19 @@
       <layout class="QVBoxLayout" name="verticalLayout_2">
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout">
+         <item>
+          <widget class="QCheckBox" name="onTopCheckBox">
+           <property name="font">
+            <font>
+             <family>黑体</family>
+             <pointsize>10</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>界面置顶</string>
+           </property>
+          </widget>
+         </item>
          <item>
           <widget class="QLineEdit" name="statusEN">
            <property name="font">
@@ -85,13 +101,6 @@
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="allBtn">
-           <property name="text">
-            <string>All</string>
-           </property>
-          </widget>
-         </item>
-         <item>
           <widget class="QPushButton" name="exitBtn">
            <property name="text">
             <string>Exit</string>
@@ -109,9 +118,14 @@
        <widget class="QPlainTextEdit" name="inputEN">
         <property name="font">
          <font>
-          <family>Arial</family>
-          <pointsize>13</pointsize>
+          <family>Microsoft YaHei</family>
+          <pointsize>11</pointsize>
          </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">background-color: rgb(203, 203, 203);
+border-color: rgb(170, 0, 0);
+border-radius: 10px;</string>
         </property>
        </widget>
       </item>
@@ -119,9 +133,14 @@
        <widget class="QTextBrowser" name="outputEN">
         <property name="font">
          <font>
-          <family>Arial</family>
-          <pointsize>13</pointsize>
+          <family>Microsoft YaHei</family>
+          <pointsize>11</pointsize>
          </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">background-color: rgb(203, 203, 203);
+border-color: rgb(170, 0, 0);
+border-radius: 10px;</string>
         </property>
        </widget>
       </item>
@@ -129,9 +148,14 @@
        <widget class="QPlainTextEdit" name="inputZH">
         <property name="font">
          <font>
-          <family>宋体</family>
+          <family>黑体</family>
           <pointsize>13</pointsize>
          </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">background-color: rgb(203, 203, 203);
+border-color: rgb(170, 0, 0);
+border-radius: 10px;</string>
         </property>
        </widget>
       </item>
@@ -139,12 +163,17 @@
        <widget class="QTextBrowser" name="outputZH">
         <property name="font">
          <font>
-          <family>宋体</family>
+          <family>黑体</family>
           <pointsize>13</pointsize>
           <weight>50</weight>
           <italic>false</italic>
           <bold>false</bold>
          </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">background-color: rgb(203, 203, 203);
+border-color: rgb(170, 0, 0);
+border-radius: 10px;</string>
         </property>
        </widget>
       </item>
@@ -157,7 +186,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>971</width>
+     <width>900</width>
      <height>26</height>
     </rect>
    </property>
@@ -283,6 +312,9 @@
   </action>
   <action name="actionEN2ZH_only">
    <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
     <bool>true</bool>
    </property>
    <property name="text">
