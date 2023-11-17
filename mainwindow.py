@@ -12,9 +12,22 @@ Copyright (c) 2023 by {brilliantrough pzyinnju@163.com}, All Rights Reserved.
 import re
 import warnings
 
-from PySide6.QtCore import Qt, QThread, Signal, Slot, QObject, QSize, QUrl
-from PySide6.QtGui import QKeyEvent, QIcon, QHideEvent, QShowEvent, QDesktopServices, QFont
-from PySide6.QtWidgets import QApplication, QMainWindow, QInputDialog, QMessageBox, QFontDialog
+from PyQt5.QtCore import Qt, QThread, pyqtSignal, pyqtSlot, QObject, QSize, QUrl
+from PyQt5.QtGui import (
+    QKeyEvent,
+    QIcon,
+    QHideEvent,
+    QShowEvent,
+    QDesktopServices,
+    QFont,
+)
+from PyQt5.QtWidgets import (
+    QApplication,
+    QMainWindow,
+    QInputDialog,
+    QMessageBox,
+    QFontDialog,
+)
 
 from chatgpt_trans import ChatGPT
 from deepL_trans import DeepL
@@ -22,6 +35,7 @@ from form_ui import Ui_MainWindow
 from google_trans import Google
 from mouse_listen import MouseListener
 import icon_rc
+
 # to import Union
 from typing import Union
 
@@ -35,7 +49,7 @@ def check_ip(string: str) -> bool:
     Returns:
         bool: 返回真或假
     """
-    pattern = r'^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}:\d+$'
+    pattern = r"^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}:\d+$"
     return re.match(pattern, string) is not None
 
 
@@ -167,12 +181,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.googleBtn.setEnabled(True)
         self.engine = "chatgpt"
 
-    @Slot(str, str)
+    @pyqtSlot(str, str)
     def getOutputZH(self, result: str, status: str):
         self.outputZH.insertPlainText(result)
         self.statusEN.setText(status)
 
-    @Slot(str, str)
+    @pyqtSlot(str, str)
     def getOutputEN(self, result: str, status: str):
         self.outputEN.insertPlainText(result)
         # self.outputEN.insertHtml(markdown.markdown(result))
@@ -201,7 +215,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         stream = self.actionChatGPT_Stream.isChecked()
 
     def setProxy(self):
-        proxy, ok = QInputDialog.getText(self, "设置代理", "<font><span style='font-family: Simsun; font-size: 16px'>请输入代理地址，例如：127.0.0.1:7890</span>")
+        proxy, ok = QInputDialog.getText(
+            self,
+            "设置代理",
+            "<font><span style='font-family: Simsun; font-size: 16px'>请输入代理地址，例如：127.0.0.1:7890</span>",
+        )
         proxy = str(proxy)
         global proxies
         if ok and check_ip(proxy):
@@ -212,7 +230,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.msgBox("设置代理", "代理成功设置为：http://" + proxy, QMessageBox.Information)
         else:
             pass
-        
+
     def msgBox(self, title, text, icon):
         msg_box = QMessageBox(self)
         msg_box.setFont(QFont("Simsun", 13))
@@ -223,31 +241,35 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         msg_box.exec()
 
     def checkProxy(self):
-        self.msgBox("检查代理", "当前代理为：" + (proxies["http"] if proxies else "使用系统代理"), QMessageBox.Information)
+        self.msgBox(
+            "检查代理",
+            "当前代理为：" + (proxies["http"] if proxies else "使用系统代理"),
+            QMessageBox.Information,
+        )
 
     def aboutPopup(self):
         # self.msgBox("关于", ABOUT, QIcon(":/icon/candy.ico"))
         QMessageBox.about(self, "关于", ABOUT)
 
     def openManual(self):
-        QDesktopServices.openUrl(QUrl("https://github.com/brilliantrough/not-powerful-translator"))
-        
+        QDesktopServices.openUrl(
+            QUrl("https://github.com/brilliantrough/not-powerful-translator")
+        )
+
     def setFontZH(self):
-        """set font of each text edit
-        """
+        """set font of each text edit"""
         ok, font = QFontDialog.getFont(self)
         if ok:
             self.inputZH.setFont(font)
             self.outputZH.setFont(font)
-            
+
     def setFontEN(self):
-        """set font of each text edit
-        """
+        """set font of each text edit"""
         ok, font = QFontDialog.getFont(self)
         if ok:
             self.inputEN.setFont(font)
             self.outputEN.setFont(font)
-    
+
     def setEN2ZHOnly(self):
         print("emit en2zh")
         if self.actionEN2ZH_only.isChecked():
@@ -334,6 +356,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.en2zh.thread.quit()
         super().closeEvent(event)
 
+
 def set_proxy(engine: Union[Google, DeepL, ChatGPT], address: str, port: int):
     """设置代理，如果 address 和 port 为空，则取消代理，可能会默认使用系统代理
 
@@ -347,12 +370,13 @@ def set_proxy(engine: Union[Google, DeepL, ChatGPT], address: str, port: int):
     else:
         engine.setProxy(unset=True)
 
+
 class ZH2ENThread(QObject):
     # Define a new signal called 'task' that takes no parameters.
-    task = Signal(str, str)
-    translate_finished = Signal(str, str)
+    task = pyqtSignal(str, str)
+    translate_finished = pyqtSignal(str, str)
 
-    @Slot()
+    @pyqtSlot(str, str)
     def do_work(self, engine: str, text):
         if engine == "google":
             tempgoogle = Google()
@@ -401,10 +425,10 @@ class ZH2EN(QObject):
 
 class EN2ZHThread(QObject):
     # Define a new signal called 'task' that takes no parameters.
-    task = Signal(str, str)
-    translate_finished = Signal(str, str)
+    task = pyqtSignal(str, str)
+    translate_finished = pyqtSignal(str, str)
 
-    @Slot()
+    @pyqtSlot(str, str)
     def do_work(self, engine: str, text: str):
         if engine == "google":
             tempgoogle = Google()
@@ -451,7 +475,7 @@ class EN2ZH(QObject):
 
 
 class SelectTextThread(QThread):
-    select_finished = Signal(str)
+    select_finished = pyqtSignal(str)
 
     def __init__(self, parent=None):
         super(SelectTextThread, self).__init__(parent)

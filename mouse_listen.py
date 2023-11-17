@@ -18,7 +18,7 @@ from threading import Condition
 import os
 from utils import Log
 
-from PySide6.QtCore import Signal, QThread
+from PyQt5.QtCore import pyqtSignal, QThread
 
 # create a condition variable for the main thread to wait for the mouse release event
 cv = Condition()
@@ -55,7 +55,7 @@ def on_click(x, y, button, pressed):
 
 
 class MouseListener(QThread):
-    selectText = Signal(str)
+    selectText = pyqtSignal(str)
 
     def __init__(self):
         super(MouseListener, self).__init__()
