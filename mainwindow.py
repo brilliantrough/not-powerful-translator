@@ -57,7 +57,7 @@ def check_ip(string: str) -> bool:
 
 warnings.filterwarnings("ignore")
 
-version = "1.0.1"
+version = "1.2.1"
 proxies = None
 google = Google()
 deepl = DeepL()
@@ -86,6 +86,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.initActions()
         self.initWindows()
         self.initSelectTextThread()
+        self.setEN2ZHOnly()
 
     def initVariables(self):
         self.en2zh = EN2ZH(self)
@@ -119,7 +120,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.exitBtn.clicked.connect(self.close)
         self.zhBtn.clicked.connect(self.zh2enTranslate)
         self.enBtn.clicked.connect(self.en2zhTranslate)
-        self.allBtn.clicked.connect(self.translateAll)
+        self.onTopCheckBox.stateChanged.connect(self.onTopCheckBoxChanged)
+        # self.allBtn.clicked.connect(self.translateAll)
 
     def initWindows(self):
         # self.setWindowFlags(Qt.WindowStaysOnTopHint)  # make the window on the top
@@ -192,6 +194,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # self.outputEN.insertHtml(markdown.markdown(result))
         self.statusZH.setText(status)
         self.autoCopyEN()
+        
+    def onTopCheckBoxChanged(self):
+        if self.onTopCheckBox.isChecked():
+            self.setWindowFlags(Qt.WindowStaysOnTopHint)
+            self.show()
+        else:
+            self.setWindowFlags(Qt.Widget)
+            self.show()
 
     def autoCopyEN(self):
         if self.actionAuto_Copy_EN.isChecked():
