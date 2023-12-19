@@ -20,6 +20,8 @@ from PyQt5.QtGui import (
     QShowEvent,
     QDesktopServices,
     QFont,
+    QTextCursor,
+    QTextBlockFormat,
 )
 from PyQt5.QtWidgets import (
     QApplication,
@@ -125,15 +127,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.screenshotBtn.clicked.connect(self.screenshotTranslate)
         self.hideButtons()
         # self.allBtn.clicked.connect(self.translateAll)
-        
 
     def initWindows(self):
         # self.setWindowFlags(Qt.WindowStaysOnTopHint)  # make the window on the top
         self.setWindowTitle("不太全能的翻译-pezayo")
         self.setIcon(":/candy.ico")
         self.resize(900, 400)
-        
-        
+
     def selectEngine(self):
         if self.engineBox.currentIndex() == 0:
             self.setGoogleEngine()
@@ -150,7 +150,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def endSelectTextThread(self):
         self.selectTextThread.quit()
         self.selectTextThread.wait()
-        
+
     def hideButtons(self):
         self.googleBtn.hide()
         self.deeplBtn.hide()
@@ -222,7 +222,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # self.outputEN.insertHtml(markdown.markdown(result))
         self.statusZH.setText(status)
         self.autoCopyEN()
-        
+
     def onTopCheckBoxChanged(self):
         if self.onTopCheckBox.isChecked():
             self.setWindowFlags(Qt.WindowStaysOnTopHint)
@@ -247,13 +247,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.selectTextThread.resume()
         else:
             self.selectTextThread.pause()
-            
+
     def setCursorFormat(self, cursor):
         cursor.movePosition(QTextCursor.Start)
         block_format = QTextBlockFormat()
-        block_format.setLineHeight(150, QTextBlockFormat.ProportionalHeight)  # Set line height
+        block_format.setLineHeight(
+            150, QTextBlockFormat.ProportionalHeight
+        )  # Set line height
         cursor.setBlockFormat(block_format)
-
 
     def setChatGPTStream(self):
         global stream
@@ -307,6 +308,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if ok:
             self.inputZH.setFont(font)
             self.outputZH.setFont(font)
+
     def setFontEN(self):
         """set font of each text edit"""
         ok, font = QFontDialog.getFont(self)
@@ -343,16 +345,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.inputEN.show()
             self.outputEN.show()
             self.inputZH.show()
-            
+
     def screenshotTranslate(self):
-        """截图翻译
-        """
+        """截图翻译"""
         self.showMinimized()
         # print("screenshot")
         sleep(0.5)
         screenshot.show()
         # self.show()
-    
+
     @pyqtSlot()
     def sst_finished_slot(self):
         self.inputEN.setPlainText(screenshot.text_todo)
