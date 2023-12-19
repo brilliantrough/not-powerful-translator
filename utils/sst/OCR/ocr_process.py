@@ -1,5 +1,4 @@
 from PIL import Image, ImageDraw, ImageFont
-import textwrap
 import pytesseract
 from ...trans_engine import Google, ChatGPT, DeepL
 
@@ -80,7 +79,7 @@ def ocr_process(image_name: str, engine: str = "google") -> tuple:
         pix = int((((right - left) * box_height / len(text)) ** 0.5) * 0.7)
 
         # 选择一个字体和字号，确保字体包含中文字符
-        font = ImageFont.truetype("msyh.ttc", size=pix)
+        font = ImageFont.truetype("NotoSansCJK-Regular.ttc", size=pix)
         wrapped_text = return_wrapped_text(
             draw, text, font, (right - left) * 0.9, int((right - left) / pix * 0.8) + 1
         )

@@ -1,3 +1,13 @@
+<!--
+ * @Author: pezayo-physical pzyinnju@163.com
+ * @Date: 2023-12-20 05:18:16
+ * @LastEditors: pezayo-physical pzyinnju@163.com
+ * @LastEditTime: 2023-12-20 06:52:05
+ * @FilePath: /not-powerful-translator-pyqt5/README.md
+ * @Description: 
+ * 
+ * Copyright (c) 2023 by pezayo-physical, All Rights Reserved. 
+-->
 # 全能翻译
 
 > 本项目志在制作一个全能的翻译，现在由于功能不是很全，于是先把名字叫做不太全能的翻译。
@@ -10,7 +20,7 @@
 
 如果运行 Python 工程需要先进行环境配置。另外可以直接运行使用 `pyinstaller` 打包好的可执行文件（120多MB）
 
-> Linux（上一版本） 打包完有 80 MB大小
+> Linux 版本有 120M
 
 直接在输入框中输入中/英文，**按下 Enter 键**进行翻译，可在输入框上方的输出框输出结果。要在输入框中按下回车可以使用 `Shift + Enter` 来代替。
 
@@ -36,7 +46,12 @@ pip install -r requirements.txt
 
 Windows 下如果使用截图翻译功能，还需要配置 OCR 库，对应库下载链接在[这里](https://github.com/UB-Mannheim/tesseract/wiki)，需要将 tesseract-ocr 库安装好后到系统中添加到环境变量 `PATH` 中，默认为 `C:\Program Files\Tesseract-OCR`，随后便可进行截图翻译，截图翻译也支持三种类型的翻译。
 
-Linux 版本请看相应 Linux 版的 README
+Linux （我用的 Ubuntu 20.04），只需要下载相应的包
+
+```
+sudo apt-get install tesseract-ocr
+sudo apt-get install libtesseract-dev
+```
 
 ## UI 介绍
 
@@ -51,17 +66,19 @@ Linux 版本请看相应 Linux 版的 README
 
 ### 截图翻译功能
 
-+ 截图后需要等待翻译过程完成才可出现图片，默认出现的图片是截图得到的原图片，按 `t` 可以切换原图和按位置翻译后的图像。
++ 截图后需要等待翻译过程完成才可出现图片，默认出现的图片是截图得到的原图片，点击转换按钮即可转换原图和译图
 
 + 截图翻译会在本地留存两张图片分别为原图和翻译后图像，为 `screenshot.png` 和 `screenshot_text.png` 
 
 + 若翻译失败则会出现之前翻译的图像 ~~（既然都失败了，还看干嘛，重新截图呗）~~
 
-+ 按 `q` 或者点击图像的叉号可以退出当前截图翻译
++ 点击关闭按钮即可关闭图像展示界面
 
 + 截图翻译完后会在相应的输入输出框中得到原文和译文
 
 + 目前截图翻译默认为英文翻译为中文 ~~（总不会有人还要中文翻译成英文吧，2333）~~
+
+> Windows 版本的图像展示是使用 opencv 实现，Linux 版本是使用 TKinter 实现的，故前者是按按键，后者是点击按钮。
 
 ### 菜单栏选项
 

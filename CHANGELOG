@@ -1,9 +1,9 @@
 <!--
  * @Author: brilliantrough pzyinnju@163.com
  * @Date: 2023-07-10 21:04:19
- * @LastEditors: brilliantrough pzyinnju@163.com
- * @LastEditTime: 2023-11-14 22:48:45
- * @FilePath: \not-powerful-translator\CHANGELOG
+ * @LastEditors: pezayo-physical pzyinnju@163.com
+ * @LastEditTime: 2023-12-20 06:54:09
+ * @FilePath: /not-powerful-translator-pyqt5/CHANGELOG
  * @Description: 
  * 
  * Copyright (c) 2023 by {brilliantrough pzyinnju@163.com}, All Rights Reserved. 
@@ -70,3 +70,10 @@
 + 将英译汉，汉译英按钮都取消
 + 截图翻译会默认在本地留存 `screentshot.png` 和 `screentshot_text.png` 两张图片
 + 已经将 Qt 版本统一换成了 PyQt5
+
+# v2.0.0 Linux
+
+大版本更新，添加了截图翻译功能
+
++ 与 Windows 版本更新一致
++ 不同的是在于翻译后图像的展示，Windows 版本使用 `opencv` 实现，Linux 版本使用 `TKinter` 实现

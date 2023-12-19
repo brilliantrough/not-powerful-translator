@@ -6,7 +6,8 @@ from PyQt5.QtCore import Qt, QRect, QPoint, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QPainter, QColor, QMouseEvent, QScreen, QPixmap
 from PIL import Image
 from .OCR.ocr_process import ocr_process
-from .OCR.switch_image import switch_image
+from .OCR.switch_image import switch_image_tk
+
 
 class ScreenCaptureTool(QWidget):
     """
@@ -34,9 +35,11 @@ class ScreenCaptureTool(QWidget):
         endPoint - The end point of the selection.
         screenshot - The cropped screenshot image.
     """
+
     ocr: pyqtSignal = pyqtSignal(str)
     quit_signal: pyqtSignal = pyqtSignal()
     sst_finished: pyqtSignal = pyqtSignal()
+
     def __init__(self, parent=None):
         super().__init__()
         self.parent = parent
@@ -56,11 +59,10 @@ class ScreenCaptureTool(QWidget):
         self.selecting = False
         self.ocr.connect(self.performOCR)
         self.quit_signal.connect(self.close)
-        
+
     def show(self):
         self.originalPixmap = QScreen.grabWindow(QApplication.primaryScreen(), 0)
         super().show()
-        
 
     def mousePressEvent(self, event: QMouseEvent):
         self.origin = event.pos()
@@ -93,15 +95,15 @@ class ScreenCaptureTool(QWidget):
         # 将QPixmap转换为PIL Image
         self.text_todo, self.text_trans = ocr_process(image_path, engine=self.engine)
         self.sst_finished.emit()
-        switch_image()
+        switch_image_tk()
         self.hide()
         if self.parent:
             print("show")
             self.parent.showNormal()
-        
+
+
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     tool = ScreenCaptureTool()
     tool.show()
     sys.exit(app.exec())
-

@@ -400,6 +400,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             and self.actionCancel_Mouse_Backstage.isChecked()
         ):
             self.actionClose_Mouse_Selection.trigger()
+            print("trigger close mouse selection")
             self.reserve_flag = True
         super().hideEvent(event)
 
