@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>900</width>
+    <width>1046</width>
     <height>400</height>
    </rect>
   </property>
@@ -67,13 +67,42 @@
          </item>
          <item>
           <widget class="QPushButton" name="googleBtn">
+           <property name="font">
+            <font>
+             <family>Arial</family>
+            </font>
+           </property>
            <property name="text">
             <string>Google</string>
            </property>
           </widget>
          </item>
          <item>
+          <widget class="QComboBox" name="engineBox">
+           <item>
+            <property name="text">
+             <string>Google</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>DeepL</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>OpenAI</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+         <item>
           <widget class="QPushButton" name="deeplBtn">
+           <property name="font">
+            <font>
+             <family>Arial</family>
+            </font>
+           </property>
            <property name="text">
             <string>DeepL</string>
            </property>
@@ -81,6 +110,11 @@
          </item>
          <item>
           <widget class="QPushButton" name="chatgptBtn">
+           <property name="font">
+            <font>
+             <family>Arial</family>
+            </font>
+           </property>
            <property name="text">
             <string>ChatGPT</string>
            </property>
@@ -101,7 +135,24 @@
           </widget>
          </item>
          <item>
+          <widget class="QPushButton" name="screenshotBtn">
+           <property name="font">
+            <font>
+             <family>黑体</family>
+            </font>
+           </property>
+           <property name="text">
+            <string>截图翻译</string>
+           </property>
+          </widget>
+         </item>
+         <item>
           <widget class="QPushButton" name="exitBtn">
+           <property name="font">
+            <font>
+             <family>Arial</family>
+            </font>
+           </property>
            <property name="text">
             <string>Exit</string>
            </property>
