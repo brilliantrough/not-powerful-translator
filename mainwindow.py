@@ -13,13 +13,26 @@ import re
 import warnings
 
 from PyQt5.QtCore import Qt, QThread, pyqtSignal, pyqtSlot, QObject, QSize, QUrl
-from PyQt5.QtGui import QKeyEvent, QIcon, QHideEvent, QShowEvent, QDesktopServices, QFont, QTextBlockFormat, QTextCursor, QTextFormat
-from PyQt5.QtWidgets import QApplication, QMainWindow, QInputDialog, QMessageBox, QFontDialog
-
+from PyQt5.QtGui import (
+    QKeyEvent,
+    QIcon,
+    QHideEvent,
+    QShowEvent,
+    QDesktopServices,
+    QFont,
+)
+from PyQt5.QtWidgets import (
+    QApplication,
+    QMainWindow,
+    QInputDialog,
+    QMessageBox,
+    QFontDialog,
+)
 from form_ui import Ui_MainWindow
 from mouse_listen import MouseListener
 from utils import ScreenCaptureTool, Google, DeepL, ChatGPT
 import icon_rc
+
 # to import Union
 from typing import Union
 from time import sleep
@@ -34,7 +47,7 @@ def check_ip(string: str) -> bool:
     Returns:
         bool: 返回真或假
     """
-    pattern = r'^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}:\d+$'
+    pattern = r"^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}:\d+$"
     return re.match(pattern, string) is not None
 
 
@@ -247,7 +260,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         stream = self.actionChatGPT_Stream.isChecked()
 
     def setProxy(self):
-        proxy, ok = QInputDialog.getText(self, "设置代理", "<font><span style='font-family: Simsun; font-size: 16px'>请输入代理地址，例如：127.0.0.1:7890</span>")
+        proxy, ok = QInputDialog.getText(
+            self,
+            "设置代理",
+            "<font><span style='font-family: Simsun; font-size: 16px'>请输入代理地址，例如：127.0.0.1:7890</span>",
+        )
         proxy = str(proxy)
         global proxies
         if ok and check_ip(proxy):
@@ -258,7 +275,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.msgBox("设置代理", "代理成功设置为：http://" + proxy, QMessageBox.Information)
         else:
             pass
-        
+
     def msgBox(self, title, text, icon):
         msg_box = QMessageBox(self)
         msg_box.setFont(QFont("Simsun", 13))
@@ -269,31 +286,34 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         msg_box.exec()
 
     def checkProxy(self):
-        self.msgBox("检查代理", "当前代理为：" + (proxies["http"] if proxies else "使用系统代理"), QMessageBox.Information)
+        self.msgBox(
+            "检查代理",
+            "当前代理为：" + (proxies["http"] if proxies else "使用系统代理"),
+            QMessageBox.Information,
+        )
 
     def aboutPopup(self):
         # self.msgBox("关于", ABOUT, QIcon(":/icon/candy.ico"))
         QMessageBox.about(self, "关于", ABOUT)
 
     def openManual(self):
-        QDesktopServices.openUrl(QUrl("https://github.com/brilliantrough/not-powerful-translator"))
-        
+        QDesktopServices.openUrl(
+            QUrl("https://github.com/brilliantrough/not-powerful-translator")
+        )
+
     def setFontZH(self):
-        """set font of each text edit
-        """
-        font, ok = QFontDialog.getFont(self)
+        """set font of each text edit"""
+        ok, font = QFontDialog.getFont(self)
         if ok:
             self.inputZH.setFont(font)
             self.outputZH.setFont(font)
-                    
     def setFontEN(self):
-        """set font of each text edit
-        """
+        """set font of each text edit"""
         ok, font = QFontDialog.getFont(self)
         if ok:
             self.inputEN.setFont(font)
             self.outputEN.setFont(font)
-    
+
     def setEN2ZHOnly(self):
         print("emit en2zh")
         if self.actionEN2ZH_only.isChecked():
@@ -395,6 +415,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         screenshot.close()
         super().closeEvent(event)
 
+
 def set_proxy(engine: Union[Google, DeepL, ChatGPT], address: str, port: int):
     """设置代理，如果 address 和 port 为空，则取消代理，可能会默认使用系统代理
 
@@ -408,8 +429,9 @@ def set_proxy(engine: Union[Google, DeepL, ChatGPT], address: str, port: int):
     else:
         engine.setProxy(unset=True)
 
+
 class ZH2ENThread(QObject):
-    # Define a new pyqtSignal called 'task' that takes no parameters.
+    # Define a new signal called 'task' that takes no parameters.
     task = pyqtSignal(str, str)
     translate_finished = pyqtSignal(str, str)
 
@@ -461,7 +483,7 @@ class ZH2EN(QObject):
 
 
 class EN2ZHThread(QObject):
-    # Define a new pyqtSignal called 'task' that takes no parameters.
+    # Define a new signal called 'task' that takes no parameters.
     task = pyqtSignal(str, str)
     translate_finished = pyqtSignal(str, str)
 
