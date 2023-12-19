@@ -10,3 +10,10 @@ Session.vim
 demo.ipynb
 *.dll
 test.py
+*.png
+*.csv
+ocr_test.py
+ocr_data.py
+ocr_tran.py
+ocr_demo.ipynb
+*.ttc
