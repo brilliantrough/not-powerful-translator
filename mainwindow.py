@@ -12,18 +12,17 @@ Copyright (c) 2023 by {brilliantrough pzyinnju@163.com}, All Rights Reserved.
 import re
 import warnings
 
-from PySide6.QtCore import Qt, QThread, Signal, Slot, QObject, QSize, QUrl
-from PySide6.QtGui import QKeyEvent, QIcon, QHideEvent, QShowEvent, QDesktopServices, QFont
-from PySide6.QtWidgets import QApplication, QMainWindow, QInputDialog, QMessageBox, QFontDialog
+from PyQt5.QtCore import Qt, QThread, pyqtSignal, pyqtSlot, QObject, QSize, QUrl
+from PyQt5.QtGui import QKeyEvent, QIcon, QHideEvent, QShowEvent, QDesktopServices, QFont, QTextBlockFormat, QTextCursor, QTextFormat
+from PyQt5.QtWidgets import QApplication, QMainWindow, QInputDialog, QMessageBox, QFontDialog
 
-from chatgpt_trans import ChatGPT
-from deepL_trans import DeepL
 from form_ui import Ui_MainWindow
-from google_trans import Google
 from mouse_listen import MouseListener
+from utils import ScreenCaptureTool, Google, DeepL, ChatGPT
 import icon_rc
 # to import Union
 from typing import Union
+from time import sleep
 
 
 def check_ip(string: str) -> bool:
@@ -81,6 +80,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.clipboard = QApplication.clipboard()
         self.address: str = ""
         self.port: int = 7890
+        self.cursorEN = self.outputEN.textCursor()
+        self.cursorZH = self.outputZH.textCursor()
 
     def initActions(self):
         self.actionCopyZH.triggered.connect(self.copyZH)
@@ -107,12 +108,26 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.zhBtn.clicked.connect(self.zh2enTranslate)
         self.enBtn.clicked.connect(self.en2zhTranslate)
         self.onTopCheckBox.stateChanged.connect(self.onTopCheckBoxChanged)
+        self.engineBox.currentIndexChanged.connect(self.selectEngine)
+        self.screenshotBtn.clicked.connect(self.screenshotTranslate)
+        self.hideButtons()
         # self.allBtn.clicked.connect(self.translateAll)
+        
 
     def initWindows(self):
         # self.setWindowFlags(Qt.WindowStaysOnTopHint)  # make the window on the top
         self.setWindowTitle("不太全能的翻译-pezayo")
-        self.setIcon(":/icon/candy.ico")
+        self.setIcon(":/candy.ico")
+        self.resize(900, 400)
+        
+        
+    def selectEngine(self):
+        if self.engineBox.currentIndex() == 0:
+            self.setGoogleEngine()
+        elif self.engineBox.currentIndex() == 1:
+            self.setDeepLEngine()
+        else:
+            self.setChatGPTEngine()
 
     def initSelectTextThread(self):
         self.selectTextThread = SelectTextThread()
@@ -122,6 +137,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def endSelectTextThread(self):
         self.selectTextThread.quit()
         self.selectTextThread.wait()
+        
+    def hideButtons(self):
+        self.googleBtn.hide()
+        self.deeplBtn.hide()
+        self.chatgptBtn.hide()
+        self.zhBtn.hide()
+        self.enBtn.hide()
 
     def setIcon(self, icon_path: str) -> None:
         """用来设置窗口图标的函数
@@ -129,18 +151,20 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         Args:
             icon_path (str): 图标的 qrc 路径
         """
-        icon = QIcon(icon_path)
-        # icon.addFile(icon_path, QSize(), QIcon.Normal, QIcon.On)
+        icon = QIcon()
+        icon.addFile(icon_path, QSize(), QIcon.Normal, QIcon.On)
         self.setWindowIcon(icon)
 
     def zh2enTranslate(self):
         self.statusZH.setText("等待...")
         self.outputEN.setText("")
+        self.setCursorFormat(self.cursorEN)
         self.zh2en.translate(self.engine, self.inputZH.toPlainText())
 
     def en2zhTranslate(self):
         self.statusEN.setText("等待...")
         self.outputZH.setText("")
+        self.setCursorFormat(self.cursorZH)
         self.en2zh.translate(self.engine, self.inputEN.toPlainText())
 
     def translateAll(self):
@@ -156,27 +180,32 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.deeplBtn.setEnabled(True)
         self.chatgptBtn.setEnabled(True)
         self.engine = "google"
+        screenshot.engine = "google"
 
     def setDeepLEngine(self):
         self.deeplBtn.setEnabled(False)
         self.googleBtn.setEnabled(True)
         self.chatgptBtn.setEnabled(True)
         self.engine = "deepl"
+        screenshot.engine = "deepl"
 
     def setChatGPTEngine(self):
         self.chatgptBtn.setEnabled(False)
         self.deeplBtn.setEnabled(True)
         self.googleBtn.setEnabled(True)
         self.engine = "chatgpt"
+        screenshot.engine = "chatgpt"
 
-    @Slot(str, str)
+    @pyqtSlot(str, str)
     def getOutputZH(self, result: str, status: str):
-        self.outputZH.insertPlainText(result)
+        # self.outputZH.insertPlainText(result)
+        self.cursorZH.insertText(result)
         self.statusEN.setText(status)
 
-    @Slot(str, str)
+    @pyqtSlot(str, str)
     def getOutputEN(self, result: str, status: str):
-        self.outputEN.insertPlainText(result)
+        # self.outputEN.insertPlainText(result)
+        self.cursorEN.insertText(result)
         # self.outputEN.insertHtml(markdown.markdown(result))
         self.statusZH.setText(status)
         self.autoCopyEN()
@@ -205,6 +234,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.selectTextThread.resume()
         else:
             self.selectTextThread.pause()
+            
+    def setCursorFormat(self, cursor):
+        cursor.movePosition(QTextCursor.Start)
+        block_format = QTextBlockFormat()
+        block_format.setLineHeight(150, QTextBlockFormat.ProportionalHeight)  # Set line height
+        cursor.setBlockFormat(block_format)
+
 
     def setChatGPTStream(self):
         global stream
@@ -245,11 +281,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def setFontZH(self):
         """set font of each text edit
         """
-        ok, font = QFontDialog.getFont(self)
+        font, ok = QFontDialog.getFont(self)
         if ok:
             self.inputZH.setFont(font)
             self.outputZH.setFont(font)
-            
+                    
     def setFontEN(self):
         """set font of each text edit
         """
@@ -287,6 +323,20 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.inputEN.show()
             self.outputEN.show()
             self.inputZH.show()
+            
+    def screenshotTranslate(self):
+        """截图翻译
+        """
+        self.showMinimized()
+        # print("screenshot")
+        sleep(0.5)
+        screenshot.show()
+        # self.show()
+    
+    @pyqtSlot()
+    def sst_finished_slot(self):
+        self.inputEN.setPlainText(screenshot.text_todo)
+        self.outputZH.setPlainText(screenshot.text_trans)
 
     def eventFilter(self, obj, event):
         """重写事件过滤器，用来实现 shift+enter 换行，enter 翻译
@@ -342,6 +392,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.endSelectTextThread()
         self.zh2en.thread.quit()
         self.en2zh.thread.quit()
+        screenshot.close()
         super().closeEvent(event)
 
 def set_proxy(engine: Union[Google, DeepL, ChatGPT], address: str, port: int):
@@ -358,11 +409,11 @@ def set_proxy(engine: Union[Google, DeepL, ChatGPT], address: str, port: int):
         engine.setProxy(unset=True)
 
 class ZH2ENThread(QObject):
-    # Define a new signal called 'task' that takes no parameters.
-    task = Signal(str, str)
-    translate_finished = Signal(str, str)
+    # Define a new pyqtSignal called 'task' that takes no parameters.
+    task = pyqtSignal(str, str)
+    translate_finished = pyqtSignal(str, str)
 
-    @Slot()
+    @pyqtSlot(str, str)
     def do_work(self, engine: str, text):
         if engine == "google":
             tempgoogle = Google()
@@ -410,11 +461,11 @@ class ZH2EN(QObject):
 
 
 class EN2ZHThread(QObject):
-    # Define a new signal called 'task' that takes no parameters.
-    task = Signal(str, str)
-    translate_finished = Signal(str, str)
+    # Define a new pyqtSignal called 'task' that takes no parameters.
+    task = pyqtSignal(str, str)
+    translate_finished = pyqtSignal(str, str)
 
-    @Slot()
+    @pyqtSlot(str, str)
     def do_work(self, engine: str, text: str):
         if engine == "google":
             tempgoogle = Google()
@@ -461,7 +512,7 @@ class EN2ZH(QObject):
 
 
 class SelectTextThread(QThread):
-    select_finished = Signal(str)
+    select_finished = pyqtSignal(str)
 
     def __init__(self, parent=None):
         super(SelectTextThread, self).__init__(parent)
@@ -493,5 +544,6 @@ class SelectTextThread(QThread):
 if __name__ == "__main__":
     app = QApplication([])
     window = MainWindow()
+    screenshot = ScreenCaptureTool(window)
     window.show()
     app.exec()
