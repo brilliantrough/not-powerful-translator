@@ -1,0 +1,17 @@
+cpr
+include/cpr
+include/curl
+include/nlohmann
+lib
+bin
+release-bin
+release-bin-vs
+cmake-build-debug
+cmake-build-release
+cmake-build-release-msvc
+single_include
+.idea
+CMakelists.txt.user
+*.a
+*.dll
+*.exe
