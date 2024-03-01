@@ -16,7 +16,7 @@ from pynput import mouse
 import time
 from threading import Condition
 import os
-from utils import Log
+from utils.mycls import Log
 
 from PyQt5.QtCore import pyqtSignal, QThread
 

@@ -17,3 +17,7 @@ ocr_data.py
 ocr_tran.py
 ocr_demo.ipynb
 *.ttc
+*.pyd
+*.c
+*.pyx
+test-pyd

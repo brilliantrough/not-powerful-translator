@@ -5,8 +5,7 @@ from PyQt5.QtWidgets import QApplication, QWidget
 from PyQt5.QtCore import Qt, QRect, QPoint, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QPainter, QColor, QMouseEvent, QScreen, QPixmap
 from PIL import Image
-from .OCR.ocr_process import ocr_process
-from .OCR.switch_image import switch_image
+from .OCR import ocr_process, switch_image
 
 class ScreenCaptureTool(QWidget):
     """
