@@ -70,3 +70,11 @@
 + 将英译汉，汉译英按钮都取消
 + 截图翻译会默认在本地留存 `screentshot.png` 和 `screentshot_text.png` 两张图片
 + 已经将 Qt 版本统一换成了 PyQt5
+
+# v2.0.1
+
+推出 Windows 2.0.1 版本
+
++ 优化界面
++ 去除部分 bug
++ 修改了软件名为英文
