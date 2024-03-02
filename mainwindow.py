@@ -213,7 +213,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.show()
     
     def selectionCheckBoxChanged(self):
-        self.selectTextThread.setFlag(not self.selectionCheckBox.isChecked())
+        self.selectTextThread.setFlag(self.selectionCheckBox.isChecked())
         if self.selectionCheckBox.isChecked():
             self.selectTextThread.resume()
         else:
