@@ -16,7 +16,7 @@ from pynput import mouse
 import time
 from threading import Condition
 import os
-from utils import Log
+from utils.mycls import Log
 
 from PyQt5.QtCore import pyqtSignal, QThread
 
@@ -131,6 +131,8 @@ class MouseListener(QThread):
         mouse.Listener.stop(self.listener)
         mouse.Listener.join(self.listener)
         self.listener = None
+        with cv:
+            cv.notify_all()
 
     def resume(self):
         """resume the mouse listener"""

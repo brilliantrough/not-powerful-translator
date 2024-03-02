@@ -1,13 +1,13 @@
-'''
+"""
 Author: brilliantrough pzyinnju@163.com
 Date: 2023-06-28 22:24:30
-LastEditors: brilliantrough pzyinnju@163.com
-LastEditTime: 2023-11-14 22:42:11
-FilePath: \not-powerful-translator\google_trans.py
+LastEditors: pezayo-physical pzyinnju@163.com
+LastEditTime: 2024-03-02 18:15:38
+FilePath: /not-powerful-translator-pyqt5/utils/trans_engine/google_trans.py
 Description: 定义了 Google 翻译类，其中定义了翻译方法 google，以及设置代理方法 setProxy。
 
 Copyright (c) 2023 by {brilliantrough pzyinnju@163.com}, All Rights Reserved. 
-'''
+"""
 
 import requests
 from requests.exceptions import RequestException
@@ -66,13 +66,20 @@ class Google:
         self.params["sl"] = src
         self.params["tl"] = dst
         self.params["q"] = text
-        kw = {"url": self.url, "params": self.params, "proxies": self.proxies, "timeout": 10}
+        kw = {
+            "url": self.url,
+            "params": self.params,
+            "proxies": self.proxies,
+            "timeout": 10,
+        }
         i = 0
         while i < self.retry_nums:
             try:
                 response = requests.get(**kw)
                 if response.status_code == 200:
                     result = response.json()[0]
+                    if not isinstance(result, list):
+                        break
                     translated_text = "".join([i[0] for i in result])
                     return translated_text, "成功"
                 else:

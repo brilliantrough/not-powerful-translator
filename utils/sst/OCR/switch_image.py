@@ -22,6 +22,10 @@ import tkinter as tk
 current_image = 1
 
 
+def switch_image():
+    return switch_image_tk()
+
+
 def switch_image_tk():
     # Initialize variables to keep track of the current image and state
     image_paths = ["screenshot.png", "screenshot_text.png"]
@@ -46,18 +50,27 @@ def switch_image_tk():
     # Display the image in a Label widget
     label = tk.Label(root, image=tk_image)
     label.pack()
+    button_frame = tk.Frame(root)
+    button_frame.pack(fill=tk.X, side=tk.BOTTOM)
 
     # Create a toggle button
-    toggle_button = tk.Button(root, text="Toggle Image", command=toggle_image)
-    toggle_button.pack()
+    toggle_button = tk.Button(
+        button_frame,
+        text="Toggle Image",
+        command=toggle_image,
+        font=("Arial", 12, "bold"),
+    )
+    toggle_button.pack(side=tk.RIGHT, padx=5, pady=5)
 
     # Function to close the window
     def close_window():
         root.destroy()
 
     # Create a button to close the window
-    close_button = tk.Button(root, text="Close", command=close_window)
-    close_button.pack()
+    close_button = tk.Button(
+        button_frame, text="Close", command=close_window, font=("Arial", 12, "bold")
+    )
+    close_button.pack(side=tk.RIGHT, padx=5)
 
     # Start the tkinter main loop
     root.mainloop()
