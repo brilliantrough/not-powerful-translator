@@ -6,8 +6,7 @@ LastEditTime: 2023-06-30 22:05:09
 FilePath: \googletranslate\translate_ui\mainwindow.py
 Description: 
 
-Copyright (c) 2023 by {brilliantrough pzyinnju@163.com}, All Rights Reserved. 
-"""
+Copyright (c) 2023 by {brilliantrough pzyinnju@163.com}, All Rights Reserved.  """
 
 import re
 import warnings
@@ -30,9 +29,10 @@ from PyQt5.QtWidgets import (
     QMessageBox,
     QFontDialog,
 )
-from form_ui import Ui_MainWindow
+from mainwindow_ui import Ui_MainWindow
 from mouse_listen import MouseListener
-from utils import ScreenCaptureTool, Google, DeepL, ChatGPT
+from utils.sst import ScreenCaptureTool
+from utils.trans_engine import Google, DeepL, ChatGPT
 import icon_rc
 
 # to import Union
@@ -57,7 +57,7 @@ def check_ip(string: str) -> bool:
 
 warnings.filterwarnings("ignore")
 
-version = "1.2.1"
+version = "2.0.1"
 proxies = None
 google = Google()
 deepl = DeepL()
@@ -99,38 +99,27 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.cursorZH = self.outputZH.textCursor()
 
     def initActions(self):
-        self.actionCopyZH.triggered.connect(self.copyZH)
+        self.copyZHBtn.clicked.connect(self.copyZH)
         self.actionChatGPT_Stream.triggered.connect(self.setChatGPTStream)
-        self.actionClose_Mouse_Selection.triggered.connect(self.closeMouseSelection)
         self.actionProxy.triggered.connect(self.setProxy)
         self.actionCheck_Proxy.triggered.connect(self.checkProxy)
         self.actionAbout.triggered.connect(self.aboutPopup)
         self.actionManual.triggered.connect(self.openManual)
-        self.actionClose_Mouse_Selection.toggled.connect(self.closeMouseSelection)
-        self.actionEN2ZH_only.triggered.connect(self.setEN2ZHOnly)
-        self.actionZH2EN_only.triggered.connect(self.setZH2ENOnly)
         self.actionFontZH.triggered.connect(self.setFontZH)
         self.actionFontEN.triggered.connect(self.setFontEN)
 
     def initButtons(self):
         self.inputEN.installEventFilter(self)
         self.inputZH.installEventFilter(self)
-        self.googleBtn.setEnabled(False)
-        self.googleBtn.clicked.connect(self.setGoogleEngine)
-        self.deeplBtn.clicked.connect(self.setDeepLEngine)
-        self.chatgptBtn.clicked.connect(self.setChatGPTEngine)
         self.exitBtn.clicked.connect(self.close)
-        self.zhBtn.clicked.connect(self.zh2enTranslate)
-        self.enBtn.clicked.connect(self.en2zhTranslate)
         self.onTopCheckBox.stateChanged.connect(self.onTopCheckBoxChanged)
         self.engineBox.currentIndexChanged.connect(self.selectEngine)
+        self.modeBox.currentIndexChanged.connect(self.selectMode)
+        self.selectionCheckBox.stateChanged.connect(self.selectionCheckBoxChanged)
         self.screenshotBtn.clicked.connect(self.screenshotTranslate)
-        self.hideButtons()
-        # self.allBtn.clicked.connect(self.translateAll)
 
     def initWindows(self):
-        # self.setWindowFlags(Qt.WindowStaysOnTopHint)  # make the window on the top
-        self.setWindowTitle("不太全能的翻译-pezayo")
+        self.setWindowTitle("not-powerful-translator")
         self.setIcon(":/candy.ico")
         self.resize(900, 400)
 
@@ -142,6 +131,24 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         else:
             self.setChatGPTEngine()
 
+    def selectMode(self):
+        if self.modeBox.currentIndex() == 0:
+            self.outputZH.show()
+            self.inputEN.show()
+            self.outputEN.hide()
+            self.inputZH.hide()
+
+        elif self.modeBox.currentIndex() == 1:
+            self.outputZH.hide()
+            self.inputEN.hide()
+            self.outputEN.show()
+            self.inputZH.show()
+        else:
+            self.outputZH.show()
+            self.inputEN.show()
+            self.outputEN.show()
+            self.inputZH.show()
+
     def initSelectTextThread(self):
         self.selectTextThread = SelectTextThread()
         self.selectTextThread.select_finished.connect(self.translateSelectedText)
@@ -150,13 +157,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def endSelectTextThread(self):
         self.selectTextThread.quit()
         self.selectTextThread.wait()
-
-    def hideButtons(self):
-        self.googleBtn.hide()
-        self.deeplBtn.hide()
-        self.chatgptBtn.hide()
-        self.zhBtn.hide()
-        self.enBtn.hide()
 
     def setIcon(self, icon_path: str) -> None:
         """用来设置窗口图标的函数
@@ -189,23 +189,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.en2zhTranslate()
 
     def setGoogleEngine(self):
-        self.googleBtn.setEnabled(False)
-        self.deeplBtn.setEnabled(True)
-        self.chatgptBtn.setEnabled(True)
         self.engine = "google"
         screenshot.engine = "google"
 
     def setDeepLEngine(self):
-        self.deeplBtn.setEnabled(False)
-        self.googleBtn.setEnabled(True)
-        self.chatgptBtn.setEnabled(True)
         self.engine = "deepl"
         screenshot.engine = "deepl"
 
     def setChatGPTEngine(self):
-        self.chatgptBtn.setEnabled(False)
-        self.deeplBtn.setEnabled(True)
-        self.googleBtn.setEnabled(True)
         self.engine = "chatgpt"
         screenshot.engine = "chatgpt"
 
@@ -225,11 +216,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def onTopCheckBoxChanged(self):
         if self.onTopCheckBox.isChecked():
-            self.setWindowFlags(Qt.WindowStaysOnTopHint)
+            self.setWindowFlags(Qt.WindowStaysOnTopHint)  # make the window on the top
             self.show()
         else:
             self.setWindowFlags(Qt.Widget)
             self.show()
+
+    def selectionCheckBoxChanged(self):
+        self.selectTextThread.setFlag(self.selectionCheckBox.isChecked())
+        if self.selectionCheckBox.isChecked():
+            self.selectTextThread.resume()
+        else:
+            self.selectTextThread.pause()
 
     def autoCopyEN(self):
         if self.actionAuto_Copy_EN.isChecked():
@@ -240,13 +238,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def copyEN(self):
         self.clipboard.setText(self.outputEN.toPlainText())
-
-    def closeMouseSelection(self):
-        self.selectTextThread.setFlag(not self.actionClose_Mouse_Selection.isChecked())
-        if self.selectTextThread.flag:
-            self.selectTextThread.resume()
-        else:
-            self.selectTextThread.pause()
 
     def setCursorFormat(self, cursor):
         cursor.movePosition(QTextCursor.Start)
@@ -273,7 +264,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             # QMessageBox.information(self, "设置代理", "代理成功设置为：http://" + proxy)
             self.address = proxy.split(":")[0]
             self.port = int(proxy.split(":")[1])
-            self.msgBox("设置代理", "代理成功设置为：http://" + proxy, QMessageBox.Information)
+            self.msgBox(
+                "设置代理", "代理成功设置为：http://" + proxy, QMessageBox.Information
+            )
         else:
             pass
 
@@ -317,34 +310,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.outputEN.setFont(font)
 
     def setEN2ZHOnly(self):
-        print("emit en2zh")
-        if self.actionEN2ZH_only.isChecked():
-            self.outputZH.show()
-            self.inputEN.show()
-            self.outputEN.hide()
-            self.inputZH.hide()
-            if self.actionZH2EN_only.isChecked():
-                self.actionZH2EN_only.setChecked(False)
-        else:
-            self.outputZH.show()
-            self.inputEN.show()
-            self.outputEN.show()
-            self.inputZH.show()
-
-    def setZH2ENOnly(self):
-        print("emit zh2en")
-        if self.actionZH2EN_only.isChecked():
-            self.outputZH.hide()
-            self.inputEN.hide()
-            self.outputEN.show()
-            self.inputZH.show()
-            if self.actionEN2ZH_only.isChecked():
-                self.actionEN2ZH_only.setChecked(False)
-        else:
-            self.outputZH.show()
-            self.inputEN.show()
-            self.outputEN.show()
-            self.inputZH.show()
+        self.outputZH.show()
+        self.inputEN.show()
+        self.outputEN.hide()
+        self.inputZH.hide()
 
     def screenshotTranslate(self):
         """截图翻译"""
@@ -374,7 +343,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             and event.key() == Qt.Key_Space
             and event.modifiers() == (Qt.ShiftModifier)
         ):
-            self.actionClose_Mouse_Selection.trigger()
+            self.selectionCheckBox.setChecked(not self.selectionCheckBox.isChecked())
             return True
         if obj == self.inputZH or obj == self.inputEN:
             if (
@@ -396,17 +365,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def hideEvent(self, event: QHideEvent) -> None:
         if (
-            not self.actionClose_Mouse_Selection.isChecked()
+            self.selectionCheckBox.isChecked()
             and self.actionCancel_Mouse_Backstage.isChecked()
         ):
-            self.actionClose_Mouse_Selection.trigger()
-            print("trigger close mouse selection")
+            self.selectTextThread.pause()
             self.reserve_flag = True
         super().hideEvent(event)
 
     def showEvent(self, event: QShowEvent) -> None:
         if self.reserve_flag and self.actionCancel_Mouse_Backstage.isChecked():
-            self.actionClose_Mouse_Selection.trigger()
+            self.selectTextThread.resume()
             self.reserve_flag = False
         super().showEvent(event)
 
@@ -432,13 +400,17 @@ def set_proxy(engine: Union[Google, DeepL, ChatGPT], address: str, port: int):
         engine.setProxy(unset=True)
 
 
+window: MainWindow = None
+
+
 class ZH2ENThread(QObject):
-    # Define a new signal called 'task' that takes no parameters.
+    # Define a new pyqtSignal called 'task' that takes no parameters.
     task = pyqtSignal(str, str)
     translate_finished = pyqtSignal(str, str)
 
     @pyqtSlot(str, str)
     def do_work(self, engine: str, text):
+        global window
         if engine == "google":
             tempgoogle = Google()
             set_proxy(tempgoogle, window.address, window.port)
@@ -485,12 +457,13 @@ class ZH2EN(QObject):
 
 
 class EN2ZHThread(QObject):
-    # Define a new signal called 'task' that takes no parameters.
+    # Define a new pyqtSignal called 'task' that takes no parameters.
     task = pyqtSignal(str, str)
     translate_finished = pyqtSignal(str, str)
 
     @pyqtSlot(str, str)
     def do_work(self, engine: str, text: str):
+        global window
         if engine == "google":
             tempgoogle = Google()
             set_proxy(tempgoogle, window.address, window.port)
@@ -565,9 +538,14 @@ class SelectTextThread(QThread):
         super().quit()
 
 
-if __name__ == "__main__":
+def main():
+    global screenshot, window
     app = QApplication([])
     window = MainWindow()
     screenshot = ScreenCaptureTool(window)
     window.show()
     app.exec()
+
+
+if __name__ == "__main__":
+    main()
