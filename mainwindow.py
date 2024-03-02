@@ -103,10 +103,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.modeBox.currentIndexChanged.connect(self.selectMode)
         self.selectionCheckBox.stateChanged.connect(self.selectionCheckBoxChanged)
         self.screenshotBtn.clicked.connect(self.screenshotTranslate)
-        
 
     def initWindows(self):
-        # self.setWindowFlags(Qt.WindowStaysOnTopHint)  # make the window on the top
         self.setWindowTitle("not-powerful-translator")
         self.setIcon(":/candy.ico")
         self.resize(900, 400)
@@ -323,7 +321,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             and event.key() == Qt.Key_Space
             and event.modifiers() == (Qt.ShiftModifier)
         ):
-            self.actionClose_Mouse_Selection.trigger()
+            self.selectionCheckBox.setChecked(not self.selectionCheckBox.isChecked())
             return True
         if obj == self.inputZH or obj == self.inputEN:
             if (
@@ -345,16 +343,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def hideEvent(self, event: QHideEvent) -> None:
         if (
-            not self.actionClose_Mouse_Selection.isChecked()
+            self.selectionCheckBox.isChecked()
             and self.actionCancel_Mouse_Backstage.isChecked()
         ):
-            self.actionClose_Mouse_Selection.trigger()
+            self.selectTextThread.pause()
             self.reserve_flag = True
         super().hideEvent(event)
 
     def showEvent(self, event: QShowEvent) -> None:
         if self.reserve_flag and self.actionCancel_Mouse_Backstage.isChecked():
-            self.actionClose_Mouse_Selection.trigger()
+            self.selectTextThread.resume()
             self.reserve_flag = False
         super().showEvent(event)
 
@@ -522,6 +520,7 @@ def main():
     screenshot = ScreenCaptureTool(window)
     window.show()
     app.exec()
+
 
 if __name__ == "__main__":
     main()
