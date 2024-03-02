@@ -2,7 +2,7 @@
  * @Author: pezayo-physical pzyinnju@163.com
  * @Date: 2023-12-20 05:18:16
  * @LastEditors: pezayo-physical pzyinnju@163.com
- * @LastEditTime: 2023-12-20 06:52:05
+ * @LastEditTime: 2024-03-02 21:38:50
  * @FilePath: /not-powerful-translator-pyqt5/README.md
  * @Description: 
  * 
@@ -55,7 +55,7 @@ sudo apt-get install libtesseract-dev
 
 ## UI 介绍
 
-这个界面做的相对简洁，总共可以看到四个框，为左右结构，上面两个框对应左边中文输入，右边英文输出，下面两个框对应左边英文输入，右边中文输出。默认只展示英文输入到中文输出的两个框，可在 mode 中更改。
+这个界面做的相对简洁，总共可以看到四个框，为左右结构，上面两个框对应左边中文输入，右边英文输出，下面两个框对应左边英文输入，右边中文输出。默认只展示英文输入到中文输出的两个框，可在下拉框中更改。
 
 ### 按钮
 
@@ -63,6 +63,8 @@ sudo apt-get install libtesseract-dev
 2. 截图翻译按钮，点击即可进行截图翻译
 3. `Exit` 按钮则是对应退出程序。
 4. 可选框 `界面置顶` ，勾选即可将界面进行置顶
+5. 可选框 `启用划词`，默认勾选开启划词翻译
+6. `复制中文` 按钮，点击复制英文翻译的中文
 
 ### 截图翻译功能
 
@@ -78,22 +80,15 @@ sudo apt-get install libtesseract-dev
 
 + 目前截图翻译默认为英文翻译为中文 ~~（总不会有人还要中文翻译成英文吧，2333）~~
 
-> Windows 版本的图像展示是使用 opencv 实现，Linux 版本是使用 TKinter 实现的，故前者是按按键，后者是点击按钮。
+> ~~Windows 版本的图像展示是使用 opencv 实现，Linux 版本是使用 TKinter 实现的，故前者是按按键，后者是点击按钮。~~ 现在 Windows 版本和 Linux 版本都是用 TKinter 实现，且有切换按钮
 
 ### 菜单栏选项
 
 在 Operation 中设置了几个选项，分别为
 
-1. `Copy zhCN`： 点击即可复制英文翻译中文的输出结果
-2. `Auto Copy EN`：可选选项，选中即可自动翻译中文翻译成英文的输出结果，无需人为去复制，默认选中
-3. `Close Mouse Seletion`： 可选选项，选中则意味着关闭鼠标划词翻译（英译汉）。默认不选中
-4. `ChatGPT Stream`： 可选选项，使用 ChatGPT 引擎时是否采用流式输出，默认开启流式输出
-5. `Cancel Mouse Backstage`： 可选选项，选中意味着在后台（最小化）时关闭鼠标划词翻译，默认选中
-
-在 mode 中设置了两个选项，分别为
-
-1. `zh2en only`： 只展示中文翻译成英文的面板，隐藏其他面板
-2. `en2zh only`： 只展示英文翻译成中文的面板，隐藏其他面板
+1. `Auto Copy EN`：可选选项，选中即可自动翻译中文翻译成英文的输出结果，无需人为去复制，默认选中
+2. `ChatGPT Stream`： 可选选项，使用 ChatGPT 引擎时是否采用流式输出，默认开启流式输出
+3. `Cancel Mouse Backstage`： 可选选项，选中意味着在后台（最小化）时关闭鼠标划词翻译，默认选中
 
 在 Settings 中设置了两个选项
 
@@ -104,4 +99,3 @@ sudo apt-get install libtesseract-dev
 
 1. `Font`： 用于设置字体，可单独设置中文和英文输入/输出框的字体，注意：打开会有几秒钟的卡顿
 2. 其他选项： 暂无用处，保留选项
-
