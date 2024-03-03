@@ -1,16 +1,26 @@
 from PIL import Image, ImageDraw, ImageFont
-import textwrap
 import pytesseract
 from ...trans_engine import Google, ChatGPT, DeepL
+
+
+def get_font_color(bg_color):
+    """Determine font color based on background color for best visibility."""
+    # Normalize RGB values to [0, 1]
+    r, g, b = [x / 255.0 for x in bg_color]
+    # Calculate luminance
+    luminance = 0.299 * r + 0.587 * g + 0.114 * b
+    # Return black or white font color based on luminance
+    return "black" if luminance > 0.5 else "white"
+
 
 def return_wrapped_text(draw, text, font, width, num):
     i = num
     j = 0
-    wrapped_text = ''
+    wrapped_text = ""
     while True:
         length = draw.textlength(text[j:i], font=font)
         if length > width:
-            wrapped_text += text[j:i-2] + '\n'
+            wrapped_text += text[j : i - 2] + "\n"
             j = i - 2
         if i >= len(text):
             wrapped_text += text[j:i]
@@ -18,7 +28,7 @@ def return_wrapped_text(draw, text, font, width, num):
         i += 2
 
 
-def ocr_process(image_name: str, engine:str = "google") -> tuple:
+def ocr_process(image_name: str, engine: str = "google") -> tuple:
     # 打开图像文件
     image = Image.open(image_name)
 
@@ -80,9 +90,12 @@ def ocr_process(image_name: str, engine:str = "google") -> tuple:
 
         
         # 选择一个字体和字号，确保字体包含中文字符
-        font = ImageFont.truetype('msyh.ttc', size=pix)
-        wrapped_text = return_wrapped_text(draw, text, font, (right - left) * 0.9, int((right - left)/pix * 0.8)+1)
-        text_color = (0, 0, 0)  # 黑色
+        font = ImageFont.truetype("msyh.ttc", size=pix)
+        wrapped_text = return_wrapped_text(
+            draw, text, font, (right - left) * 0.9, int((right - left) / pix * 0.8) + 1
+        )
+        # text_color = (0, 0, 0)  # 黑色
+        text_color = get_font_color(rectangle_color)
 
         # 指定文本的位置
         text_position = (left, top)

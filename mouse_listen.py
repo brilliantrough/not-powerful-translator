@@ -101,7 +101,20 @@ class MouseListener(QThread):
                 or selected_text == ""
                 or selected_text == original_text
             ):
-                continue
+                keyboard.press(Key.ctrl)
+                keyboard.press("c")
+                keyboard.release("c")
+                keyboard.release(Key.ctrl)  # copy the selected text
+                time.sleep(0.2)  # wait for the text to be copied
+                selected_text = paste()
+                copy(original_text)
+                if (
+                    selected_text == last_selected_text
+                    or selected_text == ""
+                    or selected_text == original_text
+                ):
+                    continue
+                
             # print("the selected text is", selected_text)
             self.selectText.emit(selected_text)
             last_selected_text = selected_text  # update the last selected text

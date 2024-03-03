@@ -2,8 +2,7 @@
 Author: brilliantrough pzyinnju@163.com
 Date: 2023-06-28 22:24:30
 LastEditors: brilliantrough pzyinnju@163.com
-LastEditTime: 2023-11-14 22:42:11
-FilePath: \not-powerful-translator\google_trans.py
+LastEditTime: 2024-03-03 17:19:06
 Description: 定义了 Google 翻译类，其中定义了翻译方法 google，以及设置代理方法 setProxy。
 
 Copyright (c) 2023 by {brilliantrough pzyinnju@163.com}, All Rights Reserved. 
@@ -73,6 +72,8 @@ class Google:
                 response = requests.get(**kw)
                 if response.status_code == 200:
                     result = response.json()[0]
+                    if not isinstance(result, list):
+                        return None, "失败"
                     translated_text = "".join([i[0] for i in result])
                     return translated_text, "成功"
                 else:

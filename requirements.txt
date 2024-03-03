@@ -3,3 +3,5 @@ openai
 pyqt5
 pyperclip
 pynput
+json
+pillow

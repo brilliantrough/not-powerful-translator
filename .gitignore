@@ -21,3 +21,4 @@ ocr_demo.ipynb
 *.c
 *.pyx
 test-pyd
+settings.json*
