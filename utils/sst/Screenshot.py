@@ -1,11 +1,11 @@
-# Last Modified: 2021-10-17 21:20:17
 import sys
 from PyQt5 import QtGui
 from PyQt5.QtWidgets import QApplication, QWidget
 from PyQt5.QtCore import Qt, QRect, QPoint, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QPainter, QColor, QMouseEvent, QScreen, QPixmap
 from PIL import Image
-from .OCR import ocr_process, switch_image
+from .OCR import ocr_process, switch_image, SwitchImage
+from threading import Thread
 
 class ScreenCaptureTool(QWidget):
     """
@@ -36,12 +36,15 @@ class ScreenCaptureTool(QWidget):
     ocr: pyqtSignal = pyqtSignal(str)
     quit_signal: pyqtSignal = pyqtSignal()
     sst_finished: pyqtSignal = pyqtSignal()
+    show_image: pyqtSignal = pyqtSignal()
     def __init__(self, parent=None):
         super().__init__()
         self.parent = parent
         self.engine = "google"
         self.text_todo = ""
         self.text_trans = ""
+        self.show_image_pool = []
+        self.show_image.connect(self.show_result)
         if self.parent:
             self.sst_finished.connect(self.parent.sst_finished_slot)
         self.initUI()
@@ -92,11 +95,16 @@ class ScreenCaptureTool(QWidget):
         # 将QPixmap转换为PIL Image
         self.text_todo, self.text_trans = ocr_process(image_path, engine=self.engine)
         self.sst_finished.emit()
-        switch_image()
+        self.show_image.emit()
+        # switch_image()
         self.hide()
         if self.parent:
-            print("show")
             self.parent.showNormal()
+
+    @pyqtSlot()
+    def show_result(self):
+        self.show_image_pool.append(SwitchImage())
+        self.show_image_pool[-1].show()
         
 if __name__ == "__main__":
     app = QApplication(sys.argv)
