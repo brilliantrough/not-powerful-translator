@@ -33,6 +33,7 @@ last_selected_text = ""  # the last selected text, initialized to empty
 selected_text = ""  # the selected text, initialized to empty
 original_text = ""  # the original text, initialized to empty
 translate_num = 1  # the number of the translation, initialized to 1
+pause_flag = False  # whether the translation is paused, initialized to False
 
 
 def on_click(x, y, button, pressed):
@@ -44,7 +45,9 @@ def on_click(x, y, button, pressed):
         button (Button): which button is pressed
         pressed (bool): whether the button is pressed or released
     """
-    global t
+    global t, pause_flag
+    if pause_flag:
+        return
     if pressed and button == mouse.Button.left:
         t = time.time()
         # print('press on {0} at {1}'.format(x, y))
@@ -126,18 +129,13 @@ class MouseListener(QThread):
 
     def pause(self):
         """pause the mouse listener"""
-        if not self.listener:
-            return
-        mouse.Listener.stop(self.listener)
-        mouse.Listener.join(self.listener)
-        self.listener = None
-        with cv:
-            cv.notify_all()
+        global pause_flag
+        pause_flag = True
 
     def resume(self):
         """resume the mouse listener"""
-        self.listener = mouse.Listener(on_click=on_click)
-        self.listener.start()
+        global pause_flag
+        pause_flag = False
 
     def quit(self):
         """exit the mouse listener"""

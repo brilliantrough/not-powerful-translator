@@ -358,7 +358,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     self.zh2enTranslate()
                     self.clearFocus()
                 else:
-
+                    self.en2zhTranslate()
                     self.clearFocus()
                 return True
         return False
