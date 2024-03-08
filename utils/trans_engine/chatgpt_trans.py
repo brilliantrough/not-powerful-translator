@@ -72,6 +72,7 @@ class ChatGPT:
         response: requests.Response = None
         while i < self.retry_nums:
             try:
+                print(self.url)
                 response = requests.post(
                     self.url,
                     verify=False,

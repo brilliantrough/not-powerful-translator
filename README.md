@@ -4,7 +4,7 @@
 
 本项目完全由 `Python` + `Qt` 进行编写，至于为什么用 `Python`，这是因为作者只会 `Python` 不会 `Typescript` 等语言。
 
-(v2.1.1) 已经进行大幅度更新，添加了截图翻译功能（仍需配置环境）
+(v3.0.0) 已经进行大幅度更新，成功重构代码，减少大量依赖，程序压缩至 30MB 左右。
 
 目前支持 `Google DeepL Baidu OpenAI` 的翻译引擎。
 
@@ -17,7 +17,7 @@
 
 ## 简单使用
 
-如果运行 Python 工程需要先进行环境配置。另外可以直接运行使用 `pyinstaller` 打包好的可执行文件（100MB）
+如果运行 Python 工程需要先进行环境配置。另外可以直接运行使用 `pyinstaller` 打包好的可执行文件（30MB）
 
 直接在输入框中输入中/英文，**按下 Enter 键**进行翻译，可在输入框上方的输出框输出结果。要在输入框中按下回车可以使用 `Shift + Enter` 来代替。
 
@@ -53,8 +53,6 @@
 + 截图翻译完后会在相应的输入输出框中得到原文和译文
 
 + 目前截图翻译默认为英文翻译为中文 ~~（总不会有人还要中文翻译成英文吧，2333）~~
-
-> ~~Windows 版本的图像展示是使用 opencv 实现，Linux 版本是使用 TKinter 实现的，故前者是按按键，后者是点击按钮。~~ 现在 Windows 版本和 Linux 版本都是用 TKinter 实现，且有切换按钮
 
 ### 菜单栏选项
 
@@ -107,5 +105,3 @@ sudo apt-get install tesseract-ocr libtesseract-dev
 ```bash
 pip install -r requirements.txt
 ```
-
-> Linux 和 Windows 上都已是 PyQt5

@@ -1,7 +1,6 @@
-requests
-openai
+openai==0.27.8
 pyqt5
 pyperclip
 pynput
-json
+pytesseract
 pillow
