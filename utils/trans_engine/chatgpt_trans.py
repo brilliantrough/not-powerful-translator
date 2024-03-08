@@ -25,7 +25,9 @@ In addition, some texts are recognized from screenshots, and there will be some 
 
 
 class ChatGPT:
-    def __init__(self):
+    def __init__(self, api_base="https://api.openai.com/v1", api_key=""):
+        openai.api_base = api_base
+        openai.api_key = api_key
         self.headers = {"Authorization": f"Bearer {openai.api_key}"}
         self.proxies = {
             "https": "http://127.0.0.1:7890",
@@ -63,6 +65,7 @@ class ChatGPT:
         i = 0
         self.data["messages"][0]["content"] = prompt
         self.data["messages"][1]["content"] = text
+        response: requests.Response = None
         while i < self.retry_nums:
             try:
                 response = requests.post(
@@ -77,12 +80,12 @@ class ChatGPT:
                     result = response.json()["choices"][0]["message"]["content"]
                     return result, "成功"
                 else:
-                    print("连接失败，状态码为 ", response.status_code)
+                    # print("连接失败，状态码为 ", response.status_code)
                     i += 1
             except RequestException as e:
-                print("连接失败，错误信息为 ", e)
+                # print("连接失败，错误信息为 ", e)
                 i += 1
-        return None, "失败"
+        return None, f"失败 {response.status_code}"
 
     def chatgpt_stream(self, prompt: str, text: str) -> tuple:
         """用流的方式进行翻译

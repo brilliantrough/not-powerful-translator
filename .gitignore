@@ -22,3 +22,5 @@ ocr_demo.ipynb
 *.pyx
 test-pyd
 settings.json*
+icon_rc.py
+mainwindow_ui.py

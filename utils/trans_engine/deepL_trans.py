@@ -12,6 +12,26 @@ Copyright (c) 2023 by {brilliantrough pzyinnju@163.com}, All Rights Reserved.
 import requests
 from requests.exceptions import RequestException
 import time
+from random import randrange
+
+def calculate_valid_timestamp(timestamp, i_count):
+    try:
+        return timestamp + (i_count - timestamp % i_count)
+    except ZeroDivisionError:
+        return timestamp
+    
+    
+def generate_timestamp(sentences):
+    now = int(time.time() * 1000)
+    i_count = 1
+    for sentence in sentences:
+        i_count += sentence.count("i")
+
+    return calculate_valid_timestamp(now, i_count)
+
+def generate_id():
+    return randrange(1_000_000, 100_000_000)
+
 
 
 def Timer(func):
@@ -23,6 +43,8 @@ def Timer(func):
         return result
 
     return wrapper
+
+MAGIC_NUMBER = int("CAFEBABE", 16)
 
 
 # BUG: 这里存在一些问题，通过模拟浏览器请求有时无法成功，甚至可能会导致自己当前的浏览器无法访问 deepL 网站
@@ -76,14 +98,15 @@ class DeepL:
                     "source_lang_user_selected": src,
                     "target_lang": dst,
                 },
-                "priority": -1,
+                "priority": 1,
                 "commonJobParams": {},
-                "timestamp": 1234567890,
+                "timestamp": generate_timestamp(text),
             },
-            "id": 123456,
+            "id": generate_id(),
         }
 
         i = 0
+        response: requests.Response = None
         while i < self.retry_nums:
             try:
                 response = requests.post(
@@ -96,13 +119,15 @@ class DeepL:
                     ][0]["postprocessed_sentence"]
                     # print("Translated text:", translated_text)
                     return translated_text, "成功"
+                elif response.status_code == 429:
+                    return None, "请求过于频繁"
                 else:
-                    print("连接失败，状态码为:", response.status_code)
+                    # print("连接失败，状态码为:", response.status_code)
                     i += 1
             except RequestException as e:
-                print(f"连接失败，错误信息为  {e}")
+                # print(f"连接失败，错误信息为  {e}")
                 i += 1
-        return None, "失败"
+        return None, f"失败 {response.status_code if response else '未知'}"
 
     def deepL_zh2en(self, text: str) -> tuple:
         """调用 deepL 将中文翻译为英文

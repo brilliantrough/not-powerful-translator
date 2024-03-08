@@ -75,6 +75,31 @@
 1. `Font`： 用于设置字体，可单独设置中文和英文输入/输出框的字体，注意：打开会有几秒钟的卡顿
 2. 其他选项： 暂无用处，保留选项
 
+## 使用细节
+
+使用过程中可执行程序会在当前目录下生成 `settings.json` 文件。用于记录和读取百度和 `OPENAI` 的 API 信息，以及代理信息。`settings.json` 中内容可自行更改，软件中也要相应接口进行更改
+
+### OPENAI 翻译
+
+在选择到 `OPENAI` 的翻译引擎时，如果 `settings.json` 中没有 `OEPNAI_API_KEY` 和 `OPENAI_API_BASE` 的记录，则会弹出窗口等待用户输入相关信息，输入完毕后点击 `Submit` 提交并将其记录在文件中。
+
+目前兼容了其他平台的 API，如 `closeai`，只需要按照官网上的内容在环境变量中设置相应的 `OPENAI_API_KEY` 和 `OPENAI_API_BASE` 即可。
+
+### 百度翻译
+
+在选择到 `Baidu` 的翻译引擎时，如果 `settings.json` 中没有 `BAIDU_APP_ID` 和 `BAIDU_KEY` 的记录，则会弹出窗口等待用户输入相关信息，输入完毕后点击 `Submit` 提交并将其记录在文件中。
+
+### 截图翻译
+
+Windows 下如果使用截图翻译功能，还需要配置 OCR 库，对应库下载链接在[这里](https://github.com/UB-Mannheim/tesseract/wiki)，需要将 tesseract-ocr 库安装好后到系统中添加到环境变量 `PATH` 中，默认为 `C:\Program Files\Tesseract-OCR`，随后便可进行截图翻译，截图翻译也支持四种类型的翻译。
+
+Linux 下只需要执行如下命令安装依赖即可
+
+```bash
+sudo apt-get install tesseract-ocr libtesseract-dev
+```
+
+
 ## 环境配置
 
 环境配置极其简单，直接 clone 本项目后运行如下命令，当然你最好是新建一个虚拟环境来完成这个操作，但考虑到本项目所依赖的包较少，直接在原来的 Python 环境中安装包对原 Python 环境并无影响。详细可到 `requirements.txt` 中去看。
@@ -84,13 +109,3 @@ pip install -r requirements.txt
 ```
 
 > Linux 和 Windows 上都已是 PyQt5
-
-要想使用 ChatGPT 的翻译引擎，需要在环境变量（注意，不是 PATH，而是和 PATH 同一级的环境变量）中添加名为 `OPENAI_API_KEY` 的环境变量，其中填入你的 key 就行，[OPENAI 官网](https://platform.openai.com/account/api-keys) 可以生成对应的 key。
-
-目前兼容了其他平台的 API，如 `closeai`，只需要按照官网上的内容在环境变量中设置相应的 `OPENAI_API_KEY` 和 `OPENAI_API_BASE` 即可。
-
-Windows 下如果使用截图翻译功能，还需要配置 OCR 库，对应库下载链接在[这里](https://github.com/UB-Mannheim/tesseract/wiki)，需要将 tesseract-ocr 库安装好后到系统中添加到环境变量 `PATH` 中，默认为 `C:\Program Files\Tesseract-OCR`，随后便可进行截图翻译，截图翻译也支持四种类型的翻译。
-
-添加了百度翻译的 API，需要百度的 `APPID` 和 `Key` 才可。
-
-Linux 版本请看相应 Linux 版的 README

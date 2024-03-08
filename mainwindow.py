@@ -45,11 +45,13 @@ def check_ip(string: str) -> bool:
 
 warnings.filterwarnings("ignore")
 
-version = "2.0.1"
+version = "2.1.3"
 proxies = None
 google = Google()
 deepl = DeepL()
 stream: bool = True
+BAIDU=0
+OPENAI=1
 
 ABOUT = f"""
 <font>
@@ -91,8 +93,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if proxy:
             self.address = proxy.split(":")[0]
             self.port = int(proxy.split(":")[1])
-        self.baiduid = self.settings.get("BaiduAppID", None)
-        self.baidukey = self.settings.get("BaiduKey", None)
+        self.baiduid = self.settings.get("BAIDU_APP_ID", None)
+        self.baidukey = self.settings.get("BAIDU_KEY", None)
+        self.openaibase = self.settings.get("OPENAI_API_BASE", "https://api.openai.com/v1")
+        self.openaikey = self.settings.get("OPENAI_API_KEY", "")
 
     def saveSettings(self):
         with open("settings.json", 'w') as file:
@@ -102,6 +106,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.settings: dict = {}
         self.baiduid: str = ""
         self.baidukey: str = ""
+        self.openaibase: str = "https://api.openai.com/v1"
+        self.openaikey: str = ""
         self.en2zh = EN2ZH(self)
         self.zh2en = ZH2EN(self)
         self.engine: str = "google"
@@ -220,27 +226,58 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if not (self.baidukey and self.baiduid):
             self.modifyBaiduAPI()
             
-    @pyqtSlot(str, str)
-    def getIdKey(self, baidu_id: str, baidu_key: str):
-        if not (baidu_id and baidu_key):
-            self.engineBox.setCurrentIndex(0)
-            del self.popup
-            return
-        self.baiduid, self.baidukey = baidu_id, baidu_key
-        self.settings["BaiduAppID"] = baidu_id
-        self.settings["BaiduKey"] = baidu_key
-        self.saveSettings()
-        del self.popup
-        self.selectTextThread.resume()
-        
     def setChatGPTEngine(self):
         self.engine = "chatgpt"
         screenshot.engine = "chatgpt"
+        if not self.openaikey:
+            self.modifyOpenAIAPI()
+            
+    @pyqtSlot(str, str, int)
+    def getIdKey(self, base_or_id: str, api_key: str, api_class:int):
+        if api_class == BAIDU:
+            self.getBaiduIdKey(baidu_id=base_or_id, baidu_key=api_key)
+        elif api_class == OPENAI:
+            self.getOpenAIAPI(api_base=base_or_id, api_key=api_key)
+            
+    def getOpenAIAPI(self, api_base, api_key):
+        if not api_key:
+            self.engineBox.setCurrentIndex(0)
+            self.engine = "google"
+            screenshot.engine = "google"
+            del self.popup
+            return
+        self.openaibase, self.openaikey = api_base, api_key
+        self.settings["OPENAI_API_BASE"] = api_base
+        self.settings["OPENAI_API_KEY"] = api_key
+        self.saveSettings()
+        del self.popup
+        self.selectTextThread.resume()
+    
+    def getBaiduIdKey(self, baidu_id:str, baidu_key: str):
+        if not (baidu_id and baidu_key):
+            self.engineBox.setCurrentIndex(0)
+            self.engine = "google"
+            screenshot.engine = "google"
+            del self.popup
+            return
+        self.baiduid, self.baidukey = baidu_id, baidu_key
+        self.settings["BAIDU_APP_ID"] = baidu_id
+        self.settings["BAIDU_KEY"] = baidu_key
+        self.saveSettings()
+        del self.popup
+        self.selectTextThread.resume()
 
     @pyqtSlot()
     def modifyBaiduAPI(self):
+        self.modifyAPIGeneral(BAIDU)
+        
+    @pyqtSlot()
+    def modifyOpenAIAPI(self):
+        self.modifyAPIGeneral(OPENAI)
+        
+    def modifyAPIGeneral(self, api_class:int):
         self.selectTextThread.pause()
-        self.popup = InfoPopup()
+        self.popup = InfoPopup(api_class=api_class)
         self.popup.submitted.connect(self.getIdKey)
         self.popup.show()
 
@@ -317,7 +354,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         msg_box.exec()
 
     def checkProxy(self):
-        self.msgBox("检查代理", "当前代理为：" + self.settings.get("proxy", "使用系统代理"), QMessageBox.Information)
+        proxy = self.settings.get("proxy", "")
+        self.msgBox("检查代理", "当前代理为：" + (proxy if proxy else "使用系统代理"), QMessageBox.Information)
 
     def aboutPopup(self):
         # self.msgBox("关于", ABOUT, QIcon(":/icon/candy.ico"))
@@ -457,7 +495,7 @@ class ZH2ENThread(QObject):
             result, status = tempbaidu.baidu_zh2en(text)
             self.translate_finished.emit(result, status)
         else:
-            tempchatgpt = ChatGPT()
+            tempchatgpt = ChatGPT(window.openaibase, window.openaikey)
             set_proxy(tempchatgpt, window.address, window.port)
             global stream
             result, status = tempchatgpt.chatgpt_zh2en(text, stream=stream)
@@ -513,7 +551,7 @@ class EN2ZHThread(QObject):
             result, status = tempbaidu.baidu_en2zh(text)
             self.translate_finished.emit(result, status)
         else:
-            tempchatgpt = ChatGPT()
+            tempchatgpt = ChatGPT(window.openaibase, window.openaikey)
             set_proxy(tempchatgpt, window.address, window.port)
             global stream
             result, status = tempchatgpt.chatgpt_en2zh(text, stream=stream)

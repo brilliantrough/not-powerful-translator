@@ -49,7 +49,6 @@ def ocr_process(image_name: str, engine: str = "google") -> tuple:
         deepl = DeepL()
         text_trans = deepl.deepl_en2zh(text_todo)[0]
     else:
-        print("chatGPT ")
         chatgpt = ChatGPT()
         text_trans = chatgpt.chatgpt_en2zh(text_todo, sst=True)[0]
     

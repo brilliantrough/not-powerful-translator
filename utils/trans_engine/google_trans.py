@@ -2,7 +2,7 @@
 Author: brilliantrough pzyinnju@163.com
 Date: 2023-06-28 22:24:30
 LastEditors: brilliantrough pzyinnju@163.com
-LastEditTime: 2024-03-03 17:19:06
+LastEditTime: 2024-03-08 16:04:08
 Description: 定义了 Google 翻译类，其中定义了翻译方法 google，以及设置代理方法 setProxy。
 
 Copyright (c) 2023 by {brilliantrough pzyinnju@163.com}, All Rights Reserved. 
@@ -67,6 +67,7 @@ class Google:
         self.params["q"] = text
         kw = {"url": self.url, "params": self.params, "proxies": self.proxies, "timeout": 10}
         i = 0
+        response: requests.Response = None
         while i < self.retry_nums:
             try:
                 response = requests.get(**kw)
@@ -77,12 +78,12 @@ class Google:
                     translated_text = "".join([i[0] for i in result])
                     return translated_text, "成功"
                 else:
-                    print("连接失败，状态码为 ", response.status_code)
+                    # print("连接失败，状态码为", response.status_code)
                     i += 1
             except RequestException as e:
-                print("连接失败，错误信息为 ", e)
+                # print("连接失败，错误信息为 ", e)
                 i += 1
-        return None, "失败"
+        return None, f"失败 {response.status_code if response else '未知'}"
 
     def google_zh2en(self, text: str) -> tuple:
         return self.google(text, src="zh-CN", dst="en")

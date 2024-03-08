@@ -29,7 +29,7 @@ class Baidu:
         result_list = []
 
         if 'error_code' in result_json:
-            return result_json['error_msg'], "失败"
+            return result_json['error_msg'], f"失败 {r.status_code if r else '未知'}"
         else:
             for result in result_json["trans_result"]:
              
