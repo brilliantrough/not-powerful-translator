@@ -169,6 +169,11 @@
            </item>
            <item>
             <property name="text">
+             <string>Baidu</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
              <string>OpenAI</string>
             </property>
            </item>
@@ -305,6 +310,7 @@ line-height: 20px;</string>
     </property>
     <addaction name="actionProxy"/>
     <addaction name="actionCheck_Proxy"/>
+    <addaction name="actionModify_Baidu_API"/>
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
@@ -451,6 +457,11 @@ line-height: 20px;</string>
   <action name="actionFontEN">
    <property name="text">
     <string>English font</string>
+   </property>
+  </action>
+  <action name="actionModify_Baidu_API">
+   <property name="text">
+    <string>Modify Baidu API</string>
    </property>
   </action>
  </widget>

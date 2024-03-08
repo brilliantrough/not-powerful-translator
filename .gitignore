@@ -20,3 +20,4 @@ icon_rc.py
 mainwindow_ui.py
 *.ttc
 .icon_rc.py
+*.json 
