@@ -10,6 +10,7 @@ Copyright (c) 2023 by {brilliantrough pzyinnju@163.com}, All Rights Reserved.  "
 
 import re
 import warnings
+from collections.abc import Iterable
 
 from PyQt5.QtCore import Qt, QThread, pyqtSignal, pyqtSlot, QObject, QSize, QUrl
 from PyQt5.QtGui import (
@@ -66,6 +67,12 @@ proxies = None
 google = Google()
 deepl = DeepL()
 stream: bool = True
+BAIDU=0
+OPENAI=1
+SUCCESS="成功"
+FAILED="失败"
+ENGINE_DICT = {"google": Google, "deepl": DeepL, "baidu": Baidu, "chatgpt": ChatGPT}
+ARGS_DICT = {"google": lambda x: [], "deepl": lambda x: [], "baidu": lambda window: [window.baiduid, window.baidukey], "chatgpt": lambda window: [window.openaibase, window.openaikey, window.stream_flag] }
 
 ABOUT = f"""
 <font>
@@ -96,24 +103,23 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def initSettings(self):
         if os.path.exists("settings.json"):
-            with open("settings.json", "r") as file:
+            with open("settings.json", 'r') as file:
                 try:
                     self.settings = json.load(file)
                 except json.decoder.JSONDecodeError:
-                    self.settings = {}
-                    self.msgBox(
-                        "设置错误",
-                        "配置文件 settings.json 格式错误，所有配置清空\n已将当前文件备份至 settings.json.backup",
-                        QMessageBox.Information,
-                    )
+                    self.settings = {}                    
+                    self.msgBox("设置错误", "配置文件 settings.json 格式错误，所有配置清空\n已将当前文件备份至 settings.json.backup", QMessageBox.Information)
                     os.system("copy settings.json settings.json.backup")
                     self.saveSettings()
         proxy = self.settings.get("proxy", None)
         if proxy:
             self.address = proxy.split(":")[0]
             self.port = int(proxy.split(":")[1])
-        self.baiduid = self.settings.get("BaiduAppID", None)
-        self.baidukey = self.settings.get("BaiduKey", None)
+        self.baiduid = self.settings.get("BAIDU_APP_ID", None) 
+        self.baidukey = self.settings.get("BAIDU_KEY", None)
+        self.openaibase = self.settings.get("OPENAI_API_BASE", "https://api.openai.com/v1")
+        self.openaikey = self.settings.get("OPENAI_API_KEY", "")
+
 
     def saveSettings(self):
         with open("settings.json", "w") as file:
@@ -123,6 +129,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.settings: dict = {}
         self.baiduid: str = ""
         self.baidukey: str = ""
+        self.stream_flag = True
         self.en2zh = EN2ZH(self)
         self.zh2en = ZH2EN(self)
         self.engine: str = "google"
@@ -142,6 +149,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.actionFontZH.triggered.connect(self.setFontZH)
         self.actionFontEN.triggered.connect(self.setFontEN)
         self.actionModify_Baidu_API.triggered.connect(self.modifyBaiduAPI)
+        self.actionModify_OpenAI_API.triggered.connect(self.modifyOpenAIAPI)
 
     def initButtons(self):
         self.inputEN.installEventFilter(self)
@@ -238,28 +246,59 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         screenshot.engine = "baidu"
         if not (self.baidukey and self.baiduid):
             self.modifyBaiduAPI()
-
-    @pyqtSlot(str, str)
-    def getIdKey(self, baidu_id: str, baidu_key: str):
+            
+    def setChatGPTEngine(self):
+        self.engine = "chatgpt"
+        screenshot.engine = "chatgpt"
+        if not self.openaikey:
+            self.modifyOpenAIAPI()
+            
+    @pyqtSlot(str, str, int)
+    def getIdKey(self, base_or_id: str, api_key: str, api_class:int):
+        if api_class == BAIDU:
+            self.getBaiduIdKey(baidu_id=base_or_id, baidu_key=api_key)
+        elif api_class == OPENAI:
+            self.getOpenAIAPI(api_base=base_or_id, api_key=api_key)
+            
+    def getOpenAIAPI(self, api_base, api_key):
+        if not api_key:
+            self.engineBox.setCurrentIndex(0)
+            self.engine = "google"
+            screenshot.engine = "google"
+            del self.popup
+            return
+        self.openaibase, self.openaikey = api_base, api_key
+        self.settings["OPENAI_API_BASE"] = api_base
+        self.settings["OPENAI_API_KEY"] = api_key
+        self.saveSettings()
+        del self.popup
+        self.selectTextThread.resume()
+    
+    def getBaiduIdKey(self, baidu_id:str, baidu_key: str):
         if not (baidu_id and baidu_key):
             self.engineBox.setCurrentIndex(0)
+            self.engine = "google"
+            screenshot.engine = "google"
             del self.popup
             return
         self.baiduid, self.baidukey = baidu_id, baidu_key
-        self.settings["BaiduAppID"] = baidu_id
-        self.settings["BaiduKey"] = baidu_key
+        self.settings["BAIDU_APP_ID"] = baidu_id
+        self.settings["BAIDU_KEY"] = baidu_key
         self.saveSettings()
         del self.popup
         self.selectTextThread.resume()
 
-    def setChatGPTEngine(self):
-        self.engine = "chatgpt"
-        screenshot.engine = "chatgpt"
-
     @pyqtSlot()
     def modifyBaiduAPI(self):
+        self.modifyAPIGeneral(BAIDU)
+        
+    @pyqtSlot()
+    def modifyOpenAIAPI(self):
+        self.modifyAPIGeneral(OPENAI)
+        
+    def modifyAPIGeneral(self, api_class:int):
         self.selectTextThread.pause()
-        self.popup = InfoPopup()
+        self.popup = InfoPopup(api_class=api_class)
         self.popup.submitted.connect(self.getIdKey)
         self.popup.show()
 
@@ -316,6 +355,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def setChatGPTStream(self):
         global stream
         stream = self.actionChatGPT_Stream.isChecked()
+        self.stream_flag = stream
 
     def setProxy(self):
         proxy, ok = QInputDialog.getText(
@@ -484,39 +524,27 @@ class ZH2ENThread(QObject):
     translate_finished = pyqtSignal(str, str)
 
     @pyqtSlot(str, str)
-    def do_work(self, engine: str, text):
-        global window
-        if engine == "google":
-            tempgoogle = Google()
-            set_proxy(tempgoogle, window.address, window.port)
-            result, status = tempgoogle.google_zh2en(text)
+    def do_work(self, engine: str, text: str):
+        global window, stream
+        temp_engine = ENGINE_DICT[engine](*ARGS_DICT[engine](window))
+        set_proxy(temp_engine, window.address, window.port)
+        result, status = temp_engine.zh2en(text)
+        if not isinstance(result, Iterable):
+            self.translate_finished.emit("", status)
+            return
+        if isinstance(result, str):
             self.translate_finished.emit(result, status)
-        elif engine == "deepl":
-            tempdeepl = DeepL()
-            set_proxy(tempdeepl, window.address, window.port)
-            result, status = tempdeepl.deepL_zh2en(text)
-            self.translate_finished.emit(result, status)
-        elif engine == "baidu":
-            tempbaidu = Baidu(window.baiduid, window.baidukey)
-            result, status = tempbaidu.baidu_zh2en(text)
-            self.translate_finished.emit(result, status)
-        else:
-            tempchatgpt = ChatGPT()
-            set_proxy(tempchatgpt, window.address, window.port)
-            global stream
-            result, status = tempchatgpt.chatgpt_zh2en(text, stream=stream)
-            if stream:
-                for i in result:
-                    try:
-                        self.translate_finished.emit(
-                            i.choices[0]["delta"]["content"], status
-                        )
-                    except Exception:
-                        return
-            else:
-                self.translate_finished.emit(result, status)
+            return
+        if engine == "chatgpt" and stream:
+            for i in result:
+                try:
+                    self.translate_finished.emit(
+                        i.choices[0]["delta"]["content"], status
+                    )
+                except Exception:
+                    return
 
-
+    
 class ZH2EN(QObject):
     def __init__(self, parent):
         # Create a QThread object.
@@ -541,37 +569,24 @@ class EN2ZHThread(QObject):
 
     @pyqtSlot(str, str)
     def do_work(self, engine: str, text: str):
-        global window
-        if engine == "google":
-            tempgoogle = Google()
-            set_proxy(tempgoogle, window.address, window.port)
-            result, status = tempgoogle.google_en2zh(text)
+        global window, stream
+        temp_engine = ENGINE_DICT[engine](*ARGS_DICT[engine](window))
+        set_proxy(temp_engine, window.address, window.port)
+        result, status = temp_engine.en2zh(text)
+        if not isinstance(result, Iterable):
+            self.translate_finished.emit("", status)
+            return
+        if isinstance(result, str):
             self.translate_finished.emit(result, status)
-        elif engine == "deepl":
-            tempdeepl = DeepL()
-            set_proxy(tempdeepl, window.address, window.port)
-            result, status = tempdeepl.deepL_en2zh(text)
-            self.translate_finished.emit(result, status)
-        elif engine == "baidu":
-            tempbaidu = Baidu(window.baiduid, window.baidukey)
-            result, status = tempbaidu.baidu_en2zh(text)
-            self.translate_finished.emit(result, status)
-        else:
-            tempchatgpt = ChatGPT()
-            set_proxy(tempchatgpt, window.address, window.port)
-            global stream
-            result, status = tempchatgpt.chatgpt_en2zh(text, stream=stream)
-            if stream:
-                for i in result:
-                    try:
-                        self.translate_finished.emit(
-                            i.choices[0]["delta"]["content"], status
-                        )
-                    except Exception:
-                        return
-            else:
-                self.translate_finished.emit(result, status)
-
+            return
+        if engine == "chatgpt" and stream:
+            for i in result:
+                try:
+                    self.translate_finished.emit(
+                        i.choices[0]["delta"]["content"], status
+                    )
+                except Exception:
+                    return
 
 class EN2ZH(QObject):
     def __init__(self, parent):

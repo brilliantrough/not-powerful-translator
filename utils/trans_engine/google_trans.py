@@ -73,6 +73,7 @@ class Google:
             "timeout": 10,
         }
         i = 0
+        response: requests.Response = None
         while i < self.retry_nums:
             try:
                 response = requests.get(**kw)
@@ -83,15 +84,21 @@ class Google:
                     translated_text = "".join([i[0] for i in result])
                     return translated_text, "成功"
                 else:
-                    print("连接失败，状态码为 ", response.status_code)
+                    # print("连接失败，状态码为 ", response.status_code)
                     i += 1
             except RequestException as e:
-                print("连接失败，错误信息为 ", e)
+                # print("连接失败，错误信息为 ", e)
                 i += 1
-        return None, "失败"
+        return None, f"失败 {response.status_code if response else '未知'}"
 
     def google_zh2en(self, text: str) -> tuple:
         return self.google(text, src="zh-CN", dst="en")
 
     def google_en2zh(self, text: str) -> tuple:
         return self.google(text, src="en", dst="zh-CN")
+    
+    def en2zh(self, text: str) -> tuple:
+        return self.google_en2zh(text)
+
+    def zh2en(self, text: str) -> tuple:
+        return self.google_zh2en(text)

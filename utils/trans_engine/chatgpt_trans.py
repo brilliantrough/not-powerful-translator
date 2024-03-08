@@ -25,13 +25,17 @@ In addition, some texts are recognized from screenshots, and there will be some 
 
 
 class ChatGPT:
-    def __init__(self):
+    def __init__(self, api_base: str ="https://api.openai.com/v1", api_key:str ="", stream_flag:bool=False):
+        openai.api_base = api_base
+        openai.api_key = api_key
+        self.stream_flag = stream_flag
         self.headers = {"Authorization": f"Bearer {openai.api_key}"}
         self.proxies = {
             "https": "http://127.0.0.1:7890",
             "http": "http://127.0.0.1:7890",
         }
         self.url = f"{openai.api_base}/chat/completions"
+        self.error = ""
         self.data = {
             "model": "gpt-3.5-turbo",
             "messages": [
@@ -49,16 +53,16 @@ class ChatGPT:
 
     def chatgpt(self, prompt: str, text: str, stream: bool = False) -> tuple:
         """翻译文本
-
-        Args:
+Args:
             prompt (str): 提示 ChatGPT 翻译类型
             text (str): 待翻译文本
             stream (bool, optional): 是否采用流的方式输出翻译结果. Defaults to False.
-
         Returns:
             tuple: (翻译结果, 状态)
         """
         if stream:
+            return self.chatgpt_stream(prompt, text)
+        if self.stream_flag:
             return self.chatgpt_stream(prompt, text)
         i = 0
         self.data["messages"][0]["content"] = prompt
@@ -77,12 +81,13 @@ class ChatGPT:
                     result = response.json()["choices"][0]["message"]["content"]
                     return result, "成功"
                 else:
-                    print("连接失败，状态码为 ", response.status_code)
+                    # print("连接失败，状态码为 ", response.status_code)
                     i += 1
             except RequestException as e:
+                self.error = str(e)
                 print("连接失败，错误信息为 ", e)
                 i += 1
-        return None, "失败"
+        return self.error, "失败"
 
     def chatgpt_stream(self, prompt: str, text: str) -> tuple:
         """用流的方式进行翻译
@@ -109,12 +114,19 @@ class ChatGPT:
                 )
                 return completion, "成功"
             except Exception as e:
+                self.error = str(e)
                 print("连接失败，错误信息为 ", e)
                 i += 1
-        return None, "失败"
+        return self.error, "失败"
 
     def chatgpt_zh2en(self, text: str, stream: bool = False, sst: bool = False) -> tuple:
         return self.chatgpt(prompt_zh2en, text, stream=stream)
 
     def chatgpt_en2zh(self, text: str, stream: bool = False, sst: bool = False) -> tuple:
         return self.chatgpt(prompt_sst, text) if sst else self.chatgpt(prompt_en2zh, text, stream=stream)
+
+    def en2zh(self, text: str) -> tuple:
+        return self.chatgpt_en2zh(text)
+
+    def zh2en(self, text: str) -> tuple:
+        return self.chatgpt_zh2en(text)
