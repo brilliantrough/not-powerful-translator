@@ -11,6 +11,7 @@ Copyright (c) 2023 by {brilliantrough pzyinnju@163.com}, All Rights Reserved.
 
 import re
 import warnings
+from collections.abc import Iterable
 
 from PyQt5.QtCore import Qt, QThread, pyqtSignal, pyqtSlot, QObject, QSize, QUrl
 from PyQt5.QtGui import QKeyEvent, QIcon, QHideEvent, QShowEvent, QDesktopServices, QFont, QTextBlockFormat, QTextCursor, QTextFormat
@@ -28,6 +29,7 @@ import json
 import os
 from getinfo import InfoPopup
 
+
 def check_ip(string: str) -> bool:
     """判断是否为 ip 地址加端口号的形式
 
@@ -37,7 +39,7 @@ def check_ip(string: str) -> bool:
     Returns:
         bool: 返回真或假
     """
-    pattern = r'(\b(?:[0-9]{1,3}\.){3}[0-9]{1,3}\b|[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}|localhost):([0-9]+)'
+    pattern = r"(\b(?:[0-9]{1,3}\.){3}[0-9]{1,3}\b|[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}|localhost):([0-9]+)"
     return re.match(pattern, string) is not None
 
 
@@ -52,6 +54,10 @@ deepl = DeepL()
 stream: bool = True
 BAIDU=0
 OPENAI=1
+SUCCESS="成功"
+FAILED="失败"
+ENGINE_DICT = {"google": Google, "deepl": DeepL, "baidu": Baidu, "chatgpt": ChatGPT}
+ARGS_DICT = {"google": lambda x: [], "deepl": lambda x: [], "baidu": lambda window: [window.baiduid, window.baidukey], "chatgpt": lambda window: [window.openaibase, window.openaikey, window.stream_flag] }
 
 ABOUT = f"""
 <font>
@@ -70,7 +76,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.engine = None
         self.zh2en: ZH2EN = None
         self.en2zh: EN2ZH = None
-        self.reserve_flag = False
+        self.reserve_flag: bool = False
+        self.top_flag: bool = False
         self.initVariables()
         self.initButtons()
         self.initActions()
@@ -93,21 +100,21 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if proxy:
             self.address = proxy.split(":")[0]
             self.port = int(proxy.split(":")[1])
-        self.baiduid = self.settings.get("BAIDU_APP_ID", None)
+        self.baiduid = self.settings.get("BAIDU_APP_ID", None) 
         self.baidukey = self.settings.get("BAIDU_KEY", None)
         self.openaibase = self.settings.get("OPENAI_API_BASE", "https://api.openai.com/v1")
         self.openaikey = self.settings.get("OPENAI_API_KEY", "")
 
+
     def saveSettings(self):
-        with open("settings.json", 'w') as file:
+        with open("settings.json", "w") as file:
             json.dump(self.settings, file, indent=4)
 
     def initVariables(self):
         self.settings: dict = {}
         self.baiduid: str = ""
         self.baidukey: str = ""
-        self.openaibase: str = "https://api.openai.com/v1"
-        self.openaikey: str = ""
+        self.stream_flag = True
         self.en2zh = EN2ZH(self)
         self.zh2en = ZH2EN(self)
         self.engine: str = "google"
@@ -127,6 +134,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.actionFontZH.triggered.connect(self.setFontZH)
         self.actionFontEN.triggered.connect(self.setFontEN)
         self.actionModify_Baidu_API.triggered.connect(self.modifyBaiduAPI)
+        self.actionModify_OpenAI_API.triggered.connect(self.modifyOpenAIAPI)
 
     def initButtons(self):
         self.inputEN.installEventFilter(self)
@@ -142,8 +150,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.setWindowTitle("not-powerful-translator")
         self.setIcon(":/candy.ico")
         self.resize(900, 400)
-        
-        
+
     def selectEngine(self):
         if self.engineBox.currentIndex() == 0:
             self.setGoogleEngine()
@@ -180,7 +187,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def endSelectTextThread(self):
         self.selectTextThread.quit()
         self.selectTextThread.wait()
-        
 
     def setIcon(self, icon_path: str) -> None:
         """用来设置窗口图标的函数
@@ -297,9 +303,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
     def onTopCheckBoxChanged(self):
         if self.onTopCheckBox.isChecked():
+            self.top_flag = True
             self.setWindowFlags(Qt.WindowStaysOnTopHint)
             self.show()
         else:
+            self.top_flag = True
             self.setWindowFlags(Qt.Widget)
             self.show()
     
@@ -319,23 +327,23 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def copyEN(self):
         self.clipboard.setText(self.outputEN.toPlainText())
-           
+
     def setCursorFormat(self, cursor):
         cursor.movePosition(QTextCursor.Start)
         block_format = QTextBlockFormat()
         block_format.setLineHeight(150, QTextBlockFormat.ProportionalHeight)  # Set line height
         cursor.setBlockFormat(block_format)
 
-
     def setChatGPTStream(self):
         global stream
         stream = self.actionChatGPT_Stream.isChecked()
+        self.stream_flag = stream
 
     def setProxy(self):
         proxy, ok = QInputDialog.getText(self, "设置代理", "<font><span style='font-family: Simsun; font-size: 16px'>请输入代理地址，例如：127.0.0.1:7890</span>")
         proxy = str(proxy)
         if ok and check_ip(proxy):
-            self.settings['proxy'] = proxy
+            self.settings["proxy"] = proxy
             # QMessageBox.information(self, "设置代理", "代理成功设置为：http://" + proxy)
             self.address = proxy.split(":")[0]
             self.port = int(proxy.split(":")[1])
@@ -410,6 +418,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         Returns:
             bool:  是否拦截事件
         """
+        if event.type() == 17 or event.type() == 18:
+            return False
         if (
             event.type() == QKeyEvent.KeyPress
             and event.key() == Qt.Key_Space
@@ -439,13 +449,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if (
             self.selectionCheckBox.isChecked()
             and self.actionCancel_Mouse_Backstage.isChecked()
+            and not self.top_flag
         ):
             self.selectTextThread.pause()
             self.reserve_flag = True
         super().hideEvent(event)
 
     def showEvent(self, event: QShowEvent) -> None:
-        if self.reserve_flag and self.actionCancel_Mouse_Backstage.isChecked():
+        if self.top_flag:
+            self.top_flag = False
+        elif self.reserve_flag and self.actionCancel_Mouse_Backstage.isChecked():
             self.selectTextThread.resume()
             self.reserve_flag = False
         super().showEvent(event)
@@ -456,6 +469,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.en2zh.thread.quit()
         screenshot.close()
         super().closeEvent(event)
+
 
 def set_proxy(engine: Union[Google, DeepL, ChatGPT], address: str, port: int):
     """设置代理，如果 address 和 port 为空，则取消代理，可能会默认使用系统代理
@@ -478,39 +492,27 @@ class ZH2ENThread(QObject):
     translate_finished = pyqtSignal(str, str)
 
     @pyqtSlot(str, str)
-    def do_work(self, engine: str, text):
-        global window
-        if engine == "google":
-            tempgoogle = Google()
-            set_proxy(tempgoogle, window.address, window.port)
-            result, status = tempgoogle.google_zh2en(text)
+    def do_work(self, engine: str, text: str):
+        global window, stream
+        temp_engine = ENGINE_DICT[engine](*ARGS_DICT[engine](window))
+        set_proxy(temp_engine, window.address, window.port)
+        result, status = temp_engine.zh2en(text)
+        if not isinstance(result, Iterable):
+            self.translate_finished.emit("", status)
+            return
+        if isinstance(result, str):
             self.translate_finished.emit(result, status)
-        elif engine == "deepl":
-            tempdeepl = DeepL()
-            set_proxy(tempdeepl, window.address, window.port)
-            result, status = tempdeepl.deepL_zh2en(text)
-            self.translate_finished.emit(result, status)
-        elif engine == "baidu":
-            tempbaidu = Baidu(window.baiduid, window.baidukey)
-            result, status = tempbaidu.baidu_zh2en(text)
-            self.translate_finished.emit(result, status)
-        else:
-            tempchatgpt = ChatGPT(window.openaibase, window.openaikey)
-            set_proxy(tempchatgpt, window.address, window.port)
-            global stream
-            result, status = tempchatgpt.chatgpt_zh2en(text, stream=stream)
-            if stream:
-                for i in result:
-                    try:
-                        self.translate_finished.emit(
-                            i.choices[0]["delta"]["content"], status
-                        )
-                    except Exception:
-                        return
-            else:
-                self.translate_finished.emit(result, status)
+            return
+        if engine == "chatgpt" and stream:
+            for i in result:
+                try:
+                    self.translate_finished.emit(
+                        i.choices[0]["delta"]["content"], status
+                    )
+                except Exception:
+                    return
 
-
+    
 class ZH2EN(QObject):
     def __init__(self, parent):
         # Create a QThread object.
@@ -535,37 +537,24 @@ class EN2ZHThread(QObject):
 
     @pyqtSlot(str, str)
     def do_work(self, engine: str, text: str):
-        global window
-        if engine == "google":
-            tempgoogle = Google()
-            set_proxy(tempgoogle, window.address, window.port)
-            result, status = tempgoogle.google_en2zh(text)
+        global window, stream
+        temp_engine = ENGINE_DICT[engine](*ARGS_DICT[engine](window))
+        set_proxy(temp_engine, window.address, window.port)
+        result, status = temp_engine.en2zh(text)
+        if not isinstance(result, Iterable):
+            self.translate_finished.emit("", status)
+            return
+        if isinstance(result, str):
             self.translate_finished.emit(result, status)
-        elif engine == "deepl":
-            tempdeepl = DeepL()
-            set_proxy(tempdeepl, window.address, window.port)
-            result, status = tempdeepl.deepL_en2zh(text)
-            self.translate_finished.emit(result, status)
-        elif engine == "baidu":
-            tempbaidu = Baidu(window.baiduid, window.baidukey)
-            result, status = tempbaidu.baidu_en2zh(text)
-            self.translate_finished.emit(result, status)
-        else:
-            tempchatgpt = ChatGPT(window.openaibase, window.openaikey)
-            set_proxy(tempchatgpt, window.address, window.port)
-            global stream
-            result, status = tempchatgpt.chatgpt_en2zh(text, stream=stream)
-            if stream:
-                for i in result:
-                    try:
-                        self.translate_finished.emit(
-                            i.choices[0]["delta"]["content"], status
-                        )
-                    except Exception:
-                        return
-            else:
-                self.translate_finished.emit(result, status)
-
+            return
+        if engine == "chatgpt" and stream:
+            for i in result:
+                try:
+                    self.translate_finished.emit(
+                        i.choices[0]["delta"]["content"], status
+                    )
+                except Exception:
+                    return
 
 class EN2ZH(QObject):
     def __init__(self, parent):

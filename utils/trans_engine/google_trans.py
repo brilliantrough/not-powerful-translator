@@ -74,7 +74,7 @@ class Google:
                 if response.status_code == 200:
                     result = response.json()[0]
                     if not isinstance(result, list):
-                        return None, "失败"
+                        break
                     translated_text = "".join([i[0] for i in result])
                     return translated_text, "成功"
                 else:
@@ -90,3 +90,9 @@ class Google:
 
     def google_en2zh(self, text: str) -> tuple:
         return self.google(text, src="en", dst="zh-CN")
+    
+    def en2zh(self, text: str) -> tuple:
+        return self.google_en2zh(text)
+
+    def zh2en(self, text: str) -> tuple:
+        return self.google_zh2en(text)

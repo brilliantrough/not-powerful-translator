@@ -34,6 +34,7 @@ def generate_id():
 
 
 
+
 def Timer(func):
     def wrapper(*args, **kwargs):
         start = time.time()
@@ -43,8 +44,6 @@ def Timer(func):
         return result
 
     return wrapper
-
-MAGIC_NUMBER = int("CAFEBABE", 16)
 
 
 # BUG: 这里存在一些问题，通过模拟浏览器请求有时无法成功，甚至可能会导致自己当前的浏览器无法访问 deepL 网站
@@ -150,3 +149,9 @@ class DeepL:
             str: 翻译后的文本
         """
         return self.deepL(text, "EN", "ZH")
+
+    def en2zh(self, text: str) -> tuple:
+        return self.deepL_en2zh(text)
+
+    def zh2en(self, text: str) -> tuple:
+        return self.deepL_zh2en(text)
