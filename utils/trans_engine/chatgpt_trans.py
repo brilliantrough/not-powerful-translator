@@ -67,8 +67,10 @@ Args:
         i = 0
         self.data["messages"][0]["content"] = prompt
         self.data["messages"][1]["content"] = text
+        response: requests.Response = None
         while i < self.retry_nums:
             try:
+                print(self.url)
                 response = requests.post(
                     self.url,
                     verify=False,

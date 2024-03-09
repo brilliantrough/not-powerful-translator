@@ -4,7 +4,7 @@
 
 本项目完全由 `Python` + `Qt` 进行编写，至于为什么用 `Python`，这是因为作者只会 `Python` 不会 `Typescript` 等语言。
 
-(v2.1.1) 已经进行大幅度更新，添加了截图翻译功能（仍需配置环境）
+(v3.0.0) 已经进行大幅度更新，成功重构代码，减少大量依赖，程序压缩至 30MB 左右。
 
 目前支持 `Google DeepL Baidu OpenAI` 的翻译引擎。
 
@@ -17,7 +17,7 @@
 
 ## 简单使用
 
-如果运行 Python 工程需要先进行环境配置。另外可以直接运行使用 `pyinstaller` 打包好的可执行文件（100MB）
+如果运行 Python 工程需要先进行环境配置。另外可以直接运行使用 `pyinstaller` 打包好的可执行文件（30MB）
 
 直接在输入框中输入中/英文，**按下 Enter 键**进行翻译，可在输入框上方的输出框输出结果。要在输入框中按下回车可以使用 `Shift + Enter` 来代替。
 
@@ -33,7 +33,7 @@
 
 ### 按钮
 
-1. 提供了 `Google`，`DeepL` `Baidu` 和 `ChatGPT` 三个选项，在下拉框中选择即可
+1. 提供了 `Google`，`DeepL` `Baidu` 和 `ChatGPT` 四个选项，在下拉框中选择即可
 2. 截图翻译按钮，点击即可进行截图翻译
 3. `Exit` 按钮则是对应退出程序。
 4. 可选框 `界面置顶` ，勾选即可将界面进行置顶
@@ -92,6 +92,8 @@
 
 ### 截图翻译
 
+Windows 下如果使用截图翻译功能，还需要配置 OCR 库，对应库下载链接在[这里](https://github.com/UB-Mannheim/tesseract/wiki)，需要将 tesseract-ocr 库安装好后到系统中添加到环境变量 `PATH` 中，默认为 `C:\Program Files\Tesseract-OCR`，随后便可进行截图翻译，截图翻译也支持四种类型的翻译。
+
 Linux 下只需要执行如下命令安装依赖即可
 
 ```bash
@@ -106,5 +108,3 @@ sudo apt-get install tesseract-ocr libtesseract-dev
 ```bash
 pip install -r requirements.txt
 ```
-
-> Linux 和 Windows 上都已是 PyQt5

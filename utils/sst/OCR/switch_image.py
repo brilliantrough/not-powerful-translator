@@ -1,16 +1,7 @@
-from PyQt5.QtWidgets import (
-    QApplication,
-    QWidget,
-    QLabel,
-    QVBoxLayout,
-    QPushButton,
-    QHBoxLayout,
-    QSpacerItem,
-    QSizePolicy,
-)
+
+from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QVBoxLayout, QPushButton, QHBoxLayout, QSpacerItem, QSizePolicy
 from PyQt5.QtGui import QPixmap, QIcon
 import icon_rc
-
 
 class SwitchImage(QWidget):
     def __init__(self):
@@ -32,14 +23,15 @@ class SwitchImage(QWidget):
         self.button_layout = QHBoxLayout()
         self.layout.addLayout(self.button_layout)
 
+
         spacer = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
         self.button_layout.addItem(spacer)
 
-        self.toggle_button = QPushButton("Toggle", self)
+        self.toggle_button = QPushButton('Toggle', self)
         self.toggle_button.clicked.connect(self.toggle_image)
         self.button_layout.addWidget(self.toggle_button)
 
-        self.close_button = QPushButton("Close", self)
+        self.close_button = QPushButton('Close', self)
         self.close_button.clicked.connect(self.close)
         self.button_layout.addWidget(self.close_button)
 

@@ -1,9 +1,8 @@
 """
 Author: brilliantrough pzyinnju@163.com
 Date: 2023-06-28 22:24:30
-LastEditors: pezayo-physical pzyinnju@163.com
-LastEditTime: 2024-03-02 18:15:38
-FilePath: /not-powerful-translator-pyqt5/utils/trans_engine/google_trans.py
+LastEditors: brilliantrough pzyinnju@163.com
+LastEditTime: 2024-03-08 16:04:08
 Description: 定义了 Google 翻译类，其中定义了翻译方法 google，以及设置代理方法 setProxy。
 
 Copyright (c) 2023 by {brilliantrough pzyinnju@163.com}, All Rights Reserved. 
@@ -84,7 +83,7 @@ class Google:
                     translated_text = "".join([i[0] for i in result])
                     return translated_text, "成功"
                 else:
-                    # print("连接失败，状态码为 ", response.status_code)
+                    # print("连接失败，状态码为", response.status_code)
                     i += 1
             except RequestException as e:
                 # print("连接失败，错误信息为 ", e)

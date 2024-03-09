@@ -1,12 +1,10 @@
 import sys
-from PyQt5 import QtGui
 from PyQt5.QtWidgets import QApplication, QWidget
-from PyQt5.QtCore import Qt, QRect, QPoint, pyqtSignal, pyqtSlot
+from PyQt5.QtCore import Qt, QRect, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QPainter, QColor, QMouseEvent, QScreen, QPixmap
 from PIL import Image
-from .OCR import ocr_process, switch_image, SwitchImage
-from threading import Thread
-
+from .OCR import ocr_process, SwitchImage
+from utils.settings import  Engine
 
 class ScreenCaptureTool(QWidget):
     """
@@ -39,11 +37,10 @@ class ScreenCaptureTool(QWidget):
     quit_signal: pyqtSignal = pyqtSignal()
     sst_finished: pyqtSignal = pyqtSignal()
     show_image: pyqtSignal = pyqtSignal()
-
     def __init__(self, parent=None):
         super().__init__()
         self.parent = parent
-        self.engine = "google"
+        self.engine: int = Engine.GOOGLE
         self.text_todo = ""
         self.text_trans = ""
         self.show_image_pool = []
@@ -107,8 +104,7 @@ class ScreenCaptureTool(QWidget):
     def show_result(self):
         self.show_image_pool.append(SwitchImage())
         self.show_image_pool[-1].show()
-
-
+        
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     tool = ScreenCaptureTool()
