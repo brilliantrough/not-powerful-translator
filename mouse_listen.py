@@ -34,6 +34,7 @@ selected_text = ""  # the selected text, initialized to empty
 original_text = ""  # the original text, initialized to empty
 translate_num = 1  # the number of the translation, initialized to 1
 pause_flag = False  # whether the translation is paused, initialized to False
+reserve_text: str = ""
 
 
 def on_click(x, y, button, pressed):
@@ -68,7 +69,7 @@ class MouseListener(QThread):
         self.listener = mouse.Listener(on_click=on_click)
         self.running: bool = True
         self.stop: bool = False
-        # self.log = Log("log.txt")
+        self.log = Log("log.txt")
 
     def run(self):
         """the main thread, to translate the selected text
@@ -84,6 +85,7 @@ class MouseListener(QThread):
         """
         global original_text, translate_num, last_selected_text, selected_text, last_copy_text
         self.listener.start()  # start the mouse listener
+        last_selected_text = os.popen("xsel").read()
         while True:
             if not self.running:
                 time.sleep(1)
@@ -99,13 +101,14 @@ class MouseListener(QThread):
                 selected_text != last_selected_text
                 and selected_text != ""
                 and selected_text != read_text[0]
+                and selected_text != reserve_text
             ):
-                # self.log.write("xsel: " + selected_text)
+                self.log.write("xsel: " + selected_text)
                 self.selectText.emit(selected_text)
                 last_selected_text = selected_text
             else:
                 original_text = paste()
-                # self.log("orignal_text:\n" + original_text)
+                self.log("orignal_text:\n" + original_text)
                 keyboard.press(Key.ctrl)
                 keyboard.press(Key.insert)
                 time.sleep(0.1)
@@ -119,12 +122,13 @@ class MouseListener(QThread):
                     and selected_text != last_copy_text
                     and selected_text != original_text
                 ):
-                    # self.log.write("copied:" + selected_text)
+                    self.log.write("copied:" + selected_text)
                     self.selectText.emit(selected_text)
                     last_copy_text = selected_text
                 # restore the original text
                 copy(original_text)
             read_text[0] = read_text[1]
+            reserve_text = os.popen("xsel").read()
             translate_num += 1  # update the number of the translation
 
     def pause(self):

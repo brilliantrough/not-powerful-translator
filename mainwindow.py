@@ -13,7 +13,7 @@ import warnings
 from collections.abc import Iterable
 
 from PyQt5.QtCore import Qt, QThread, pyqtSignal, pyqtSlot, QObject, QSize, QUrl
-from PyQt5.QtGui import QKeyEvent, QIcon, QHideEvent, QShowEvent, QDesktopServices, QFont, QTextBlockFormat, QTextCursor, QTextFormat
+from PyQt5.QtGui import QKeyEvent, QIcon, QHideEvent, QShowEvent, QDesktopServices, QFont, QTextBlockFormat, QTextCursor, QTextFormat, QFocusEvent
 from PyQt5.QtWidgets import QApplication, QMainWindow, QInputDialog, QMessageBox, QFontDialog
 
 from mainwindow_ui import Ui_MainWindow
@@ -106,6 +106,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.openaibase = self.settings.get("OPENAI_API_BASE", "https://api.openai.com/v1")
         self.openaikey = self.settings.get("OPENAI_API_KEY", "")
         Settings.BAIDU_APP_ID, Settings.BAIDU_API_KEY, Settings.OPENAI_API_BASE, Settings.OPENAI_API_KEY = self.baiduid, self.baidukey, self.openaibase, self.openaikey
+        self.setFocusPolicy(Qt.ClickFocus)
 
 
     def saveSettings(self):
@@ -125,6 +126,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.port: int = 7890
         self.cursorEN = self.outputEN.textCursor()
         self.cursorZH = self.outputZH.textCursor()
+        self.focused_flag: bool = False
 
     def initActions(self):
         self.copyZHBtn.clicked.connect(self.copyZH)
@@ -137,6 +139,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.actionFontEN.triggered.connect(self.setFontEN)
         self.actionModify_Baidu_API.triggered.connect(self.modifyBaiduAPI)
         self.actionModify_OpenAI_API.triggered.connect(self.modifyOpenAIAPI)
+        self.actionMinimalist_Mode.triggered.connect(self.minimalistMode)
 
     def initButtons(self):
         self.inputEN.installEventFilter(self)
@@ -144,14 +147,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.exitBtn.clicked.connect(self.close)
         self.onTopCheckBox.stateChanged.connect(self.onTopCheckBoxChanged)
         self.engineBox.currentIndexChanged.connect(self.selectEngine)
-        self.modeBox.currentIndexChanged.connect(self.selectMode)
+        self.modeBox.currentIndexChanged.connect(self.updateWindow)
         self.selectionCheckBox.stateChanged.connect(self.selectionCheckBoxChanged)
         self.screenshotBtn.clicked.connect(self.screenshotTranslate)
+        self.hideInputCheckBox.stateChanged.connect(self.updateWindow)
 
     def initWindows(self):
         self.setWindowTitle("not-powerful-translator")
         self.setIcon(":/candy.ico")
         self.resize(900, 400)
+        self.copyZHBtn.hide()
+        self.exitBtn.hide()
 
     def selectEngine(self):
         if self.engineBox.currentIndex() == 0:
@@ -163,23 +169,32 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         else:
             self.setChatGPTEngine()
 
-    def selectMode(self):
+    def updateWindow(self):
         if self.modeBox.currentIndex() == 0:
+            self.statusEN.show()
+            self.statusZH.hide()
             self.outputZH.show()
-            self.inputEN.show()
             self.outputEN.hide()
             self.inputZH.hide()
+            self.inputEN.show() if not self.hideInputCheckBox.isChecked() else self.inputEN.hide()
 
         elif self.modeBox.currentIndex() == 1:
+            self.statusEN.hide()
+            self.statusZH.show()
             self.outputZH.hide()
+            self.outputEN.show()
             self.inputEN.hide()
-            self.outputEN.show()
-            self.inputZH.show()
+            self.inputZH.show() if not self.hideInputCheckBox.isChecked() else self.inputZH.hide()
         else:
+            self.statusEN.show()
             self.outputZH.show()
-            self.inputEN.show()
             self.outputEN.show()
-            self.inputZH.show()
+            if not self.hideInputCheckBox.isChecked():
+                self.inputZH.show()
+                self.inputEN.show()
+            else:
+                self.inputZH.hide()
+                self.inputEN.hide()
 
     def initSelectTextThread(self):
         self.selectTextThread = SelectTextThread()
@@ -315,6 +330,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.top_flag = True
             self.setWindowFlags(Qt.Widget)
             self.show()
+
+    def hideInputCheckBoxChanged(self):
+        if self.hideInputCheckBox.isChecked():
+            self.inputEN.hide()
+            self.inputZH.hide()
+        else:
+            self.inputZH.show()
+            self.inputEN.show()
     
     def selectionCheckBoxChanged(self):
         self.selectTextThread.setFlag(self.selectionCheckBox.isChecked())
@@ -393,6 +416,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             QUrl("https://github.com/brilliantrough/not-powerful-translator")
         )
 
+    def minimalistMode(self):
+        if self.actionMinimalist_Mode.isChecked():
+            self.display_widget.hide()
+            self.func_widget.hide()
+        else:
+            self.display_widget.show()
+            self.func_widget.show()
+
     def setFontZH(self):
         """set font of each text edit"""
         font, ok = QFontDialog.getFont(self)
@@ -463,6 +494,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 return True
         return False
 
+    def focusInEvent(self, event: QFocusEvent):
+        self.focused_flag = True
+        # print("Windows focused:", self.focused_flag)
+
+    def focusOutEvent(self, event: QFocusEvent):
+        self.focused_flag = False
+        # print("Window focused:", self.focused_flag)
+
     def hideEvent(self, event: QHideEvent) -> None:
         if (
             self.selectionCheckBox.isChecked()
@@ -487,6 +526,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.en2zh.thread.quit()
         screenshot.close()
         super().closeEvent(event)
+
 
 
 window: MainWindow = None

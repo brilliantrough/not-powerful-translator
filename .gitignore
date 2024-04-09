@@ -26,3 +26,4 @@ icon_rc.py
 mainwindow_ui.py
 .icon_rc.py
 *.json 
+test-*
