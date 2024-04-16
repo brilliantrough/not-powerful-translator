@@ -47,6 +47,8 @@ public:
 
     void SendCtrlIns();
 
+    void SendCtrlC();
+
     std::string GetClipboardText();
 
     void mouseHookThreadFunc();

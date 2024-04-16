@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1050</width>
-    <height>410</height>
+    <height>404</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,7 +18,25 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout_2">
-    <item row="1" column="0">
+    <property name="leftMargin">
+     <number>7</number>
+    </property>
+    <property name="topMargin">
+     <number>0</number>
+    </property>
+    <property name="rightMargin">
+     <number>7</number>
+    </property>
+    <property name="bottomMargin">
+     <number>1</number>
+    </property>
+    <property name="horizontalSpacing">
+     <number>5</number>
+    </property>
+    <property name="verticalSpacing">
+     <number>1</number>
+    </property>
+    <item row="2" column="0">
      <widget class="QWidget" name="widget" native="true">
       <property name="minimumSize">
        <size>
@@ -27,201 +45,275 @@
        </size>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_2">
+       <property name="spacing">
+        <number>3</number>
+       </property>
+       <property name="leftMargin">
+        <number>3</number>
+       </property>
+       <property name="topMargin">
+        <number>3</number>
+       </property>
+       <property name="rightMargin">
+        <number>3</number>
+       </property>
+       <property name="bottomMargin">
+        <number>3</number>
+       </property>
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout">
-         <item>
-          <widget class="QCheckBox" name="onTopCheckBox">
+        <layout class="QGridLayout" name="gridLayout">
+         <property name="leftMargin">
+          <number>5</number>
+         </property>
+         <property name="rightMargin">
+          <number>5</number>
+         </property>
+         <property name="spacing">
+          <number>7</number>
+         </property>
+         <item row="3" column="0">
+          <widget class="QPlainTextEdit" name="inputZH">
            <property name="font">
             <font>
              <family>黑体</family>
-             <pointsize>10</pointsize>
+             <pointsize>13</pointsize>
             </font>
            </property>
-           <property name="text">
-            <string>界面置顶</string>
+           <property name="styleSheet">
+            <string notr="true">QPlainTextEdit {
+background-color: rgb(203, 203, 203);
+border-color: rgb(170, 0, 0);
+border-radius: 10px;
+}
+QScrollBar:vertical { width: 15px; }</string>
            </property>
           </widget>
          </item>
-         <item>
-          <widget class="QCheckBox" name="selectionCheckBox">
+         <item row="4" column="1">
+          <widget class="CustomTextBrowser" name="outputZH">
            <property name="font">
             <font>
              <family>黑体</family>
-             <pointsize>10</pointsize>
+             <pointsize>13</pointsize>
+             <weight>50</weight>
+             <italic>false</italic>
+             <bold>false</bold>
             </font>
            </property>
-           <property name="text">
-            <string>启用划词</string>
-           </property>
-           <property name="checked">
-            <bool>true</bool>
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(203, 203, 203);
+border-color: rgb(170, 0, 0);
+border-radius: 10px;
+line-height: 20px;</string>
            </property>
           </widget>
          </item>
-         <item>
-          <widget class="QLineEdit" name="statusEN">
+         <item row="3" column="1">
+          <widget class="CustomTextBrowser" name="outputEN">
            <property name="font">
             <font>
-             <family>宋体</family>
-             <pointsize>12</pointsize>
+             <family>Microsoft YaHei</family>
+             <pointsize>11</pointsize>
             </font>
            </property>
-           <property name="text">
-            <string/>
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(203, 203, 203);
+border-color: rgb(170, 0, 0);
+border-radius: 10px;</string>
            </property>
           </widget>
          </item>
-         <item>
-          <widget class="QLineEdit" name="statusZH">
+         <item row="4" column="0">
+          <widget class="QPlainTextEdit" name="inputEN">
            <property name="font">
             <font>
-             <family>宋体</family>
-             <pointsize>12</pointsize>
+             <family>Microsoft YaHei</family>
+             <pointsize>11</pointsize>
             </font>
            </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="copyZHBtn">
-           <property name="text">
-            <string>复制中文</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QComboBox" name="modeBox">
-           <item>
-            <property name="text">
-             <string>英译汉</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>汉译英</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>Both</string>
-            </property>
-           </item>
-          </widget>
-         </item>
-         <item>
-          <widget class="QComboBox" name="engineBox">
-           <item>
-            <property name="text">
-             <string>Google</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>DeepL</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>OpenAI</string>
-            </property>
-           </item>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="screenshotBtn">
-           <property name="font">
-            <font>
-             <family>黑体</family>
-            </font>
-           </property>
-           <property name="text">
-            <string>截图翻译</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="exitBtn">
-           <property name="font">
-            <font>
-             <family>Arial</family>
-            </font>
-           </property>
-           <property name="text">
-            <string>Exit</string>
+           <property name="styleSheet">
+            <string notr="true">QPlainTextEdit {
+background-color: rgb(203, 203, 203);
+border-color: rgb(170, 0, 0);
+border-radius: 10px;
+}
+QScrollBar:vertical { width: 15px; }</string>
            </property>
           </widget>
          </item>
         </layout>
        </item>
+       <item>
+        <widget class="QWidget" name="display_widget" native="true">
+         <layout class="QHBoxLayout" name="horizontalLayout">
+          <property name="spacing">
+           <number>5</number>
+          </property>
+          <item>
+           <widget class="QLineEdit" name="statusEN">
+            <property name="font">
+             <font>
+              <family>宋体</family>
+              <pointsize>12</pointsize>
+             </font>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="statusZH">
+            <property name="font">
+             <font>
+              <family>宋体</family>
+              <pointsize>12</pointsize>
+             </font>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="copyZHBtn">
+            <property name="font">
+             <font>
+              <family>黑体</family>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QPushButton {
+background-image: url(://copy.svg);
+}</string>
+            </property>
+            <property name="text">
+             <string>复制中文</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="screenshotBtn">
+            <property name="font">
+             <font>
+              <family>黑体</family>
+             </font>
+            </property>
+            <property name="text">
+             <string>截图翻译</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="exitBtn">
+            <property name="font">
+             <font>
+              <family>Arial</family>
+             </font>
+            </property>
+            <property name="text">
+             <string>EXIT</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
       </layout>
      </widget>
     </item>
-    <item row="0" column="0">
-     <layout class="QGridLayout" name="gridLayout">
-      <item row="1" column="0">
-       <widget class="QPlainTextEdit" name="inputEN">
-        <property name="font">
-         <font>
-          <family>Microsoft YaHei</family>
-          <pointsize>11</pointsize>
-         </font>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">background-color: rgb(203, 203, 203);
-border-color: rgb(170, 0, 0);
-border-radius: 10px;</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1">
-       <widget class="QTextBrowser" name="outputEN">
-        <property name="font">
-         <font>
-          <family>Microsoft YaHei</family>
-          <pointsize>11</pointsize>
-         </font>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">background-color: rgb(203, 203, 203);
-border-color: rgb(170, 0, 0);
-border-radius: 10px;</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="0">
-       <widget class="QPlainTextEdit" name="inputZH">
-        <property name="font">
-         <font>
-          <family>黑体</family>
-          <pointsize>13</pointsize>
-         </font>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">background-color: rgb(203, 203, 203);
-border-color: rgb(170, 0, 0);
-border-radius: 10px;</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1">
-       <widget class="QTextBrowser" name="outputZH">
-        <property name="font">
-         <font>
-          <family>黑体</family>
-          <pointsize>13</pointsize>
-          <weight>50</weight>
-          <italic>false</italic>
-          <bold>false</bold>
-         </font>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">background-color: rgb(203, 203, 203);
-border-color: rgb(170, 0, 0);
-border-radius: 10px;
-line-height: 20px;</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
+    <item row="1" column="0">
+     <widget class="QWidget" name="func_widget" native="true">
+      <layout class="QHBoxLayout" name="horizontalLayout_3">
+       <item>
+        <widget class="QCheckBox" name="onTopCheckBox">
+         <property name="font">
+          <font>
+           <family>黑体</family>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>界面置顶</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="selectionCheckBox">
+         <property name="font">
+          <font>
+           <family>黑体</family>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>启用划词</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="hideInputCheckBox">
+         <property name="font">
+          <font>
+           <family>黑体</family>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>隐藏输入</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="modeBox">
+         <property name="font">
+          <font>
+           <family>黑体</family>
+          </font>
+         </property>
+         <item>
+          <property name="text">
+           <string>英译汉</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>汉译英</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Both</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="engineBox">
+         <property name="font">
+          <font>
+           <family>Arial</family>
+          </font>
+         </property>
+         <item>
+          <property name="text">
+           <string>Google</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>OpenAI</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Baidu</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+      </layout>
+     </widget>
     </item>
    </layout>
   </widget>
@@ -231,7 +323,7 @@ line-height: 20px;</string>
      <x>0</x>
      <y>0</y>
      <width>1050</width>
-     <height>21</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu">
@@ -246,8 +338,17 @@ line-height: 20px;</string>
     <property name="title">
      <string>Settings</string>
     </property>
-    <addaction name="actionProxy"/>
-    <addaction name="actionCheck_Proxy"/>
+    <widget class="QMenu" name="menuProxy">
+     <property name="title">
+      <string>Proxy</string>
+     </property>
+     <addaction name="actionSet_Proxy"/>
+     <addaction name="actionCheck_Proxy"/>
+    </widget>
+    <addaction name="menuProxy"/>
+    <addaction name="separator"/>
+    <addaction name="actionModify_Baidu_API"/>
+    <addaction name="actionModify_OpenAI_API"/>
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
@@ -264,6 +365,7 @@ line-height: 20px;</string>
     <addaction name="actionJust_ZH"/>
     <addaction name="actionJust_EN"/>
     <addaction name="actionRestore"/>
+    <addaction name="actionMinimalist_Mode"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -276,19 +378,6 @@ line-height: 20px;</string>
    <addaction name="menusettings"/>
    <addaction name="menuView"/>
    <addaction name="menuHelp"/>
-  </widget>
-  <widget class="QStatusBar" name="statusbar"/>
-  <widget class="QToolBar" name="toolBar">
-   <property name="windowTitle">
-    <string>toolBar</string>
-   </property>
-   <attribute name="toolBarArea">
-    <enum>TopToolBarArea</enum>
-   </attribute>
-   <attribute name="toolBarBreak">
-    <bool>false</bool>
-   </attribute>
-   <addaction name="separator"/>
   </widget>
   <action name="actionCopyZH">
    <property name="text">
@@ -363,11 +452,6 @@ line-height: 20px;</string>
     <string>both</string>
    </property>
   </action>
-  <action name="actionProxy">
-   <property name="text">
-    <string>Proxy</string>
-   </property>
-  </action>
   <action name="actionJust_ZH">
    <property name="text">
     <string>Just ZH</string>
@@ -393,11 +477,6 @@ line-height: 20px;</string>
     <string>Manual</string>
    </property>
   </action>
-  <action name="actionCheck_Proxy">
-   <property name="text">
-    <string>Check Proxy</string>
-   </property>
-  </action>
   <action name="actionFontZH">
    <property name="text">
     <string>Chinese font</string>
@@ -408,7 +487,42 @@ line-height: 20px;</string>
     <string>English font</string>
    </property>
   </action>
+  <action name="actionModify_Baidu_API">
+   <property name="text">
+    <string>Modify Baidu API</string>
+   </property>
+  </action>
+  <action name="actionModify_OpenAI_API">
+   <property name="text">
+    <string>Modify OpenAI API</string>
+   </property>
+  </action>
+  <action name="actionMinimalist_Mode">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Minimalist Mode</string>
+   </property>
+  </action>
+  <action name="actionCheck_Proxy">
+   <property name="text">
+    <string>Check Proxy</string>
+   </property>
+  </action>
+  <action name="actionSet_Proxy">
+   <property name="text">
+    <string>Set Proxy</string>
+   </property>
+  </action>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>CustomTextBrowser</class>
+   <extends>QTextBrowser</extends>
+   <header location="global">customtextbrowser.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

@@ -14,7 +14,7 @@ std::tuple<std::string, std::string> GoogleEngine::translate(const std::string& 
 	for (int i = 0; i < retry_nums; ++i) {
 		try {
             cpr::Response response;
-            if (proxy_flag)
+            if (_PROXY_FLAG)
                 response = cpr::Get(cpr::Url{url}, parameters, proxies, cpr::Timeout{10000});
             else
                 response = cpr::Get(cpr::Url{url}, parameters, cpr::Timeout{10000});
@@ -36,6 +36,10 @@ std::tuple<std::string, std::string> GoogleEngine::translate(const std::string& 
 		}
 	}
 	return {"", "失败"};
+}
+
+void GoogleEngine::setAPI() {
+    // do nothing
 }
 
 GoogleEngine::~GoogleEngine() = default;

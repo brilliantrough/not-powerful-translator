@@ -6,7 +6,7 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
 # add include directory
-include_directories(include)
+include_directories(include include/widget)
 set(CMAKE_PREFIX_PATH "D:/Qt/5.14.2/mingw73_64")
 if (CMAKE_BUILD_TYPE MATCHES "Debug")
     set(EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/bin)
@@ -34,22 +34,28 @@ endif ()
 
 # set mouse selection files
 set(ENCODE_CONVERT_FILES include/mouse_selection/EncodeConvert.h)
-set(MOUSE_SELECTION_FILES src/mouse_selection/MouseSelection.cpp include/mouse_selection/MouseSelection.h ${ENCODE_CONVERT_FILES})
+set(MOUSE_SELECTION_FILES include/mouse_selection/MouseSelection.h src/mouse_selection/MouseSelection.cpp ${ENCODE_CONVERT_FILES})
+set(SETTINGS_FILE include/Settings.h include/Settings.cpp)
 
 find_package(Qt5 COMPONENTS
         Core
         Gui
         Widgets
+        Svg
         REQUIRED
         )
 
 # set library
-add_library(utils SHARED src/mouse_selection/EncodeConvert.cpp)
+add_library(utils SHARED src/mouse_selection/EncodeConvert.cpp include/Settings.cpp)
+
+qt5_add_resources(RESOURCE_FILES resource.qrc)
 
 add_executable(not-powerful-translator WIN32
         main.cpp mainwindow.cpp mainwindow.h mainwindow.ui
         ${MOUSE_SELECTION_FILES}
+        ${RESOURCE_FILES}
         resource.rc
+        ${SETTINGS_FILE}
         )
 
 target_link_libraries(not-powerful-translator
@@ -57,9 +63,8 @@ target_link_libraries(not-powerful-translator
         Qt5::Gui
         Qt5::Widgets
         TransEngine
-        utils
+        CustomWidget
         )
-
 
 if (WIN32)
     set(DEBUG_SUFFIX)
@@ -100,3 +105,5 @@ set(SRCDIR ${CMAKE_SOURCE_DIR}/src)
 add_subdirectory(src/mouse_selection)
 add_subdirectory(src/TransEngine)
 add_subdirectory(src/cpr)
+add_subdirectory(src/ScreenShot)
+add_subdirectory(src/widget)

@@ -11,6 +11,12 @@ cmake-build-release
 cmake-build-release-msvc
 single_include
 .idea
+not-powerful-translator
+images
+not-powerful-translator-inno.iss
+not-powerful-translator.zip
+resource.rcc
+Session.vim
 CMakelists.txt.user
 *.a
 *.dll

@@ -2,12 +2,12 @@
 // Created by pzy123 on 2/1/2024.
 //
 #include "TransEngine/OpenAIEngine.h"
+#include "Settings.h"
 
 std::string prompt_en2zh = "You should act as a Chinese translator, spelling corrector and improver. The user will speak to you in any language and you will detect the language, translate it and answer in the corrected and improved version of my text, in Chinese. You should only reply the correction, the improvements and nothing else, do not write explanations. Your goal is to ensure that the translation is as smooth and natural as possible, while not changing the meaning of the text.";
 std::string prompt_zh2en = "You should act as an English translator, spelling corrector and improver. The user will speak to you in any language and you will detect the language, translate it and answer in the corrected and improved version of my text, in English. You should only reply the correction, the improvements and nothing else, do not write explanations. Your goal is to ensure that the translation is as smooth and natural as possible, while not changing the meaning of the text.";
 OpenAIEngine::OpenAIEngine() {
-    url = std::string(std::getenv("OPENAI_API_BASE")) + "/chat/completions";
-    key = std::string(std::getenv("OPENAI_API_KEY"));
+    setAPI();
 }
 
 
@@ -50,6 +50,11 @@ std::tuple<std::string, std::string> OpenAIEngine::translate(const std::string& 
         }
     }
     return {"", "失败"};
+}
+
+void OpenAIEngine::setAPI() {
+    url = _OPENAI_API_BASE + "/v1/chat/completions";
+    key = _OPENAI_API_KEY;
 }
 
 OpenAIEngine::~OpenAIEngine() = default;

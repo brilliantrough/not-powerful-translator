@@ -1,5 +1,6 @@
 #include <QApplication>
 #include <QPushButton>
+#include <QResource>
 #include "mainwindow.h"
 
 class MainWindow;

@@ -1,21 +1,33 @@
 cmake_minimum_required(VERSION 3.22)
-project(mouse-selector)
+project(ScreenShot)
 set(CMAKE_CXX_STANDARD 17)
-include_directories(${INCDIR}/mouse_selection)
+set(CMAKE_PREFIX_PATH "D:/Qt/5.14.2/mingw73_64")
+include_directories(${INCDIR}/ScreenShot)
+file(GLOB HEADER_FILES ${INCDIR}/ScreenShot/*.h)
+file(GLOB SOURCE_FILES ${SRCDIR}/ScreenShot/*.cpp)
+
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
+find_package(Qt5 COMPONENTS
+        Core
+        Gui
+        Widgets
+        REQUIRED
+)
+add_library(ScreenShot SHARED ${SOURCE_FILES})
 
-set(HEADER_FILE ${INCDIR}/mouse_selection/MouseSelection.h)
-add_library(selector SHARED MouseSelection.cpp ${HEADER_FILE})
-add_executable(mouse-selector ms-main.cpp)
-
-target_link_libraries(selector Qt5::Core Qt5::Gui Qt5::Widgets)
-target_link_libraries(mouse-selector selector)
+add_executable(ScreenShot_main WIN32 ScreenShot_main/ScreenShot_main.cpp ${INCDIR}/ScreenShot/ScreenShot.h)
+#target_link_libraries(ScreenShot ${CPR_DLL})
+target_link_libraries(ScreenShot_main
+        ScreenShot
+        Qt5::Core
+        Qt5::Gui
+        Qt5::Widgets
+        )
 
 set(EXECUTABLE_OUTPUT_PATH ${EXEOUTPATH})
 set(LIBRARY_OUTPUT_PATH  ${LIBOUTPATH})
-
 if (WIN32)
     set(DEBUG_SUFFIX)
     if (MSVC AND CMAKE_BUILD_TYPE MATCHES "Debug")

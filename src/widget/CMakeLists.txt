@@ -1,0 +1,12 @@
+cmake_minimum_required(VERSION 3.22)
+project(widget)
+set(CMAKE_CXX_STANDARD 17)
+#include_directories(${INCDIR}/widget)
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+set(CMAKE_AUTOUIC ON)
+
+add_library(CustomWidget SHARED customtextbrowser.cpp ${INCDIR}/widget/customtextbrowser.h)
+target_link_libraries(CustomWidget Qt5::Core Qt5::Gui Qt5::Widgets)
+set(EXECUTABLE_OUTPUT_PATH ${EXEOUTPATH})
+set(LIBRARY_OUTPUT_PATH  ${LIBOUTPATH})

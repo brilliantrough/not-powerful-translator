@@ -12,9 +12,12 @@
 #include <QTextCursor>
 #include <QMessageBox>
 #include <QLabel>
+#include <QDesktopServices>
 #include "TransEngine/GoogleEngine.h"
 #include "TransEngine/OpenAIEngine.h"
+#include "TransEngine/BaiduEngine.h"
 #include "mouse_selection/MouseSelection.h"
+#include "Settings.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -22,6 +25,7 @@ QT_END_NAMESPACE
 class OpenAIEngine;
 class GoogleEngine;
 class BasicEngine;
+class BaiduEngine;
 class MouseSelection;
 class ChildWorker;
 
@@ -34,6 +38,8 @@ public:
 	std::shared_ptr<GoogleEngine> google_engine;
 
     std::shared_ptr<OpenAIEngine> openai_engine;
+
+    std::shared_ptr<BaiduEngine> baidu_engine;
 
     MouseSelection *mouse_listener;
 
@@ -66,6 +72,9 @@ signals:
 public slots:
     void display_status_result(const QString& output, const QString& status, bool flag);
 
+protected:
+    void closeEvent(QCloseEvent *event) override;
+
 private slots:
 	void on_exitBtn_clicked();
 
@@ -77,14 +86,25 @@ private slots:
 
     void on_copyZHBtn_clicked();
 
-    void modeBox_changed(int index);
-
     void engineBox_changed(int index);
 
     void check_proxy();
 
     void set_proxy();
 
+    void updateWindow();
+
+    void minimalListMode();
+
+    void enterOpenAIAPI();
+
+    void enterBaiduAPI();
+
+    void on_screenShotBtn_clicked();
+
+    void about();
+
+    void openManual();
 
 private:
 	Ui::MainWindow *ui;
@@ -99,6 +119,8 @@ private:
     void initEvent();
 
     void initWindows();
+
+    void initSettings();
 
     void setCursorFormat(QTextCursor* cursor);
 

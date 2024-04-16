@@ -14,6 +14,8 @@ public:
 public:
 	std::tuple<std::string, std::string> translate(const std::string& text, const std::string& src, const std::string& dst) override;
 
+    void setAPI() override;
+
 
 };
 

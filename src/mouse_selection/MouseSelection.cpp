@@ -37,7 +37,7 @@ void MouseSelection::CheckMouseClick(){
 void MouseSelection::SendCtrlIns() {
     if (!if_mouse_select)
         return;
-    INPUT inputs[4] = {};
+    INPUT inputs[2] = {};
     // Set up inputs for Ctrl+ins
     // Press Ctrl
     inputs[0].type = INPUT_KEYBOARD;
@@ -45,14 +45,41 @@ void MouseSelection::SendCtrlIns() {
     // Press insert
     inputs[1].type = INPUT_KEYBOARD;
     inputs[1].ki.wVk = VK_INSERT;
-    // Release insert
-    inputs[2] = inputs[1];
-    inputs[2].ki.dwFlags = KEYEVENTF_KEYUP;
-    // Release Ctrl
-    inputs[3] = inputs[0];
-    inputs[3].ki.dwFlags = KEYEVENTF_KEYUP;
-
     SendInput(ARRAYSIZE(inputs), inputs, sizeof(INPUT));
+    Sleep(100);
+    // Release insert
+    inputs[0].type = INPUT_KEYBOARD;
+    inputs[0].ki.wVk = VK_CONTROL;
+    inputs[0].ki.dwFlags = KEYEVENTF_KEYUP;
+    // Release Ctrl
+    inputs[1].type = INPUT_KEYBOARD;
+    inputs[1].ki.wVk = VK_INSERT;
+    inputs[1].ki.dwFlags = KEYEVENTF_KEYUP;
+    SendInput(ARRAYSIZE(inputs), inputs, sizeof(INPUT));
+
+}
+
+void MouseSelection::SendCtrlC() {
+    INPUT inputs[2] = {};
+    // Set up inputs for Ctrl+C
+    // Press Ctrl
+    inputs[0].type = INPUT_KEYBOARD;
+    inputs[0].ki.wVk = VK_CONTROL;
+    // Press C
+    inputs[1].type = INPUT_KEYBOARD;
+    inputs[1].ki.wVk = 'C';
+    SendInput(ARRAYSIZE(inputs), inputs, sizeof(INPUT));
+    Sleep(100);
+    // Release C
+    inputs[0].type = INPUT_KEYBOARD;
+    inputs[0].ki.wVk = VK_CONTROL;
+    inputs[0].ki.dwFlags = KEYEVENTF_KEYUP;
+    // Release Ctrl
+    inputs[1].type = INPUT_KEYBOARD;
+    inputs[1].ki.wVk = 'C';
+    inputs[1].ki.dwFlags = KEYEVENTF_KEYUP;
+    SendInput(ARRAYSIZE(inputs), inputs, sizeof(INPUT));
+
 }
 
 std::string MouseSelection::GetClipboardText() {
@@ -88,6 +115,16 @@ void MouseSelection::mouseHookThreadFunc() {
             if (checkIfClipboardChanged()){
 //                std::cout << "copied text: " << current_selected_text << std::endl;
                 emit passSelectedText();
+            }
+            else {
+                SendCtrlC();
+                Sleep(100);
+                if (!if_mouse_select)
+                    continue;
+                current_selected_text = GetClipboardText();
+                if (checkIfClipboardChanged()){
+                    emit passSelectedText();
+                }
             }
             lFlagMouseDown = false;
         }
