@@ -9,14 +9,15 @@ Description: 定义 ChatGPT 翻译类，其中根据翻译类型定义了两个�
 
 Copyright (c) 2023 by {brilliantrough pzyinnju@163.com}, All Rights Reserved. 
 """
+
 import requests
 from requests.exceptions import RequestException
-import openai
 import os
+import json
 
 prompt_zh2en = "You should act as an English translator, spelling corrector and improver. The user will speak to you in any language and you will detect the language, translate it and answer in the corrected and improved version of my text, in English. You should only reply the correction, the improvements and nothing else, do not write explanations. Your goal is to ensure that the translation is as smooth and natural as possible, while not changing the meaning of the text."
 
-prompt_en2zh = "You should act as a Chinese translator, spelling corrector and improver. The user will speak to you in any language and you will detect the language, translate it and answer in the corrected and improved version of my text, in Chinese. You should only reply the correction, the improvements and nothing else, do not write explanations. Your goal is to ensure that the translation is as smooth and natural as possible, while not changing the meaning of the text."
+prompt_en2zh = "You should act as a Chinese translator, spelling corrector and improver. The user will speak to you in any language and you will detect the language, translate it and answer in the corrected and improved version of my text, in Chinese. You should only reply the correction, the improvements and nothing else, do not write explanations. Your goal is to ensure that the translation is as smooth and natural as possible, while not changing the meaning of the text. For certain electronic information and computer-related terminology, such as Transformer, LLM, and some titles, please do not translate."
 
 prompt_sst = """
 You need to translate the English I provide you into Chinese. Note that the English translation I provide you is marked with each block separated by carriage returns. Please translate it for me by block, retaining the detailed structure, that is, retaining the original carriage returns.
@@ -25,31 +26,30 @@ In addition, some texts are recognized from screenshots, and there will be some 
 
 
 class ChatGPT:
-    def __init__(self, api_base: str ="https://api.openai.com/v1", api_key:str ="", stream_flag:bool=False):
-        openai.api_base = api_base
-        openai.api_key = api_key
+    def __init__(
+        self,
+        api_base: str = "https://njuapi.pezayo.com/v1",
+        api_key: str = "",
+        stream_flag: bool = False,
+        model: str = "gpt-4o-mini",
+    ):
         self.stream_flag = stream_flag
-        self.headers = {"Authorization": f"Bearer {openai.api_key}"}
-        self.proxies = {
-            "https": "http://127.0.0.1:7890",
-            "http": "http://127.0.0.1:7890",
-        }
-        self.url = f"{openai.api_base}/chat/completions"
         self.error = ""
-        self.data = {
-            "model": "gpt-3.5-turbo",
-            "messages": [
-                {"role": "system", "content": ""},
-                {"role": "user", "content": ""},
-            ],
-        }
         self.retry_nums = 3
-        
-    def setProxy(self, address: str = "127.0.0.1", port: int = 7890, unset: bool = False):
+        self.api_key = api_key
+        self.api_base = api_base
+        self.model = model
+
+    def setProxy(
+        self, address: str = "127.0.0.1", port: int = 7890, unset: bool = False
+    ):
         if unset:
             self.proxies = None
             return
-        self.proxies = {"https": f"http://{address}:{port}", "http": f"http://{address}:{port}"}
+        self.proxies = {
+            "https": f"http://{address}:{port}",
+            "http": f"http://{address}:{port}",
+        }
 
     def chatgpt(self, prompt: str, text: str, stream: bool = False) -> tuple:
         """翻译文本
@@ -67,27 +67,33 @@ class ChatGPT:
         if self.stream_flag:
             return self.chatgpt_stream(prompt, text)
         i = 0
-        self.data["messages"][0]["content"] = prompt
-        self.data["messages"][1]["content"] = text
-        response: requests.Response = None
         while i < self.retry_nums:
             try:
-                print(self.url)
+                url = f"{self.api_base}/chat/completions"
+                headers = {
+                    "Authorization": f"Bearer {self.api_key}",
+                    "Content-Type": "application/json",
+                }
+                data = {
+                    "model": self.model,
+                    "messages": [
+                        {"role": "system", "content": prompt},
+                        {"role": "user", "content": text},
+                    ],
+                }
                 response = requests.post(
-                    self.url,
-                    verify=False,
-                    headers=self.headers,
+                    url,
+                    headers=headers,
+                    data=json.dumps(data),
+                    stream=True,
+                    timeout=10,
                     proxies=self.proxies,
-                    json=self.data,
-                    timeout=40,
                 )
-                if response.status_code == 200:
-                    result = response.json()["choices"][0]["message"]["content"]
-                    return result, "成功"
-                else:
-                    # print("连接失败，状态码为 ", response.status_code)
-                    i += 1
-            except RequestException as e:
+                # Parse the JSON content of the response
+                response_data = response.json()
+                result = response_data["choices"][0]["message"]["content"]
+                return result, "成功"
+            except Exception as e:
                 self.error = str(e)
                 print("连接失败，错误信息为 ", e)
                 i += 1
@@ -101,33 +107,71 @@ class ChatGPT:
             text (str): 待翻译文本
 
         Returns:
-            tuple:  (翻译结果, 状态)
+            tuple:  (生成器, 状态)
         """
+        url = f"{self.api_base}/chat/completions"
+        headers = {
+            "Authorization": f"Bearer {self.api_key}",
+            "Content-Type": "application/json",
+        }
+        print(self.model)
+        data = {
+            "model": self.model,
+            "messages": [
+                {"role": "system", "content": prompt},
+                {"role": "user", "content": text},
+            ],
+            "stream": True,
+            "temperature": 0.5,
+        }
+
         i = 0
         while i < self.retry_nums:
             try:
-                openai.proxy = self.proxies['http'] if self.proxies else None
-                completion = openai.ChatCompletion.create(
-                    model="gpt-3.5-turbo",
-                    messages=[
-                        {"role": "system", "content": prompt},
-                        {"role": "user", "content": text},
-                    ],
-                    stream=True,
-                    timeout=10,
+                response = requests.post(
+                    url, headers=headers, data=json.dumps(data), stream=True, timeout=10
                 )
-                return completion, "成功"
+
+                # Return a generator that yields each piece of content
+                def generator():
+                    for line in response.iter_lines():
+                        if line:
+                            try:
+                                line_content_str = line.decode("utf-8").lstrip("data: ")
+                                if line_content_str.strip() == "[DONE]":
+                                    continue
+                                line_content = json.loads(line_content_str)
+                                if "choices" in line_content:
+                                    content = line_content["choices"][0]["delta"].get(
+                                        "content", ""
+                                    )
+                                    for char in content:
+                                        yield char
+                            except json.JSONDecodeError:
+                                print(
+                                    "Received non-JSON response:", line.decode("utf-8")
+                                )
+
+                return generator(), "成功"
             except Exception as e:
                 self.error = str(e)
                 print("连接失败，错误信息为 ", e)
                 i += 1
         return self.error, "失败"
 
-    def chatgpt_zh2en(self, text: str, stream: bool = False, sst: bool = False) -> tuple:
+    def chatgpt_zh2en(
+        self, text: str, stream: bool = False, sst: bool = False
+    ) -> tuple:
         return self.chatgpt(prompt_zh2en, text, stream=stream)
 
-    def chatgpt_en2zh(self, text: str, stream: bool = False, sst: bool = False) -> tuple:
-        return self.chatgpt(prompt_sst, text) if sst else self.chatgpt(prompt_en2zh, text, stream=stream)
+    def chatgpt_en2zh(
+        self, text: str, stream: bool = False, sst: bool = False
+    ) -> tuple:
+        return (
+            self.chatgpt(prompt_sst, text)
+            if sst
+            else self.chatgpt(prompt_en2zh, text, stream=stream)
+        )
 
     def en2zh(self, text: str) -> tuple:
         return self.chatgpt_en2zh(text)
