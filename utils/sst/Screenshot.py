@@ -4,7 +4,9 @@ from PyQt5.QtCore import Qt, QRect, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QPainter, QColor, QMouseEvent, QScreen, QPixmap
 from PIL import Image
 from .OCR import ocr_process, SwitchImage
-from utils.settings import  Engine
+from utils.settings import Engine
+import os
+
 
 class ScreenCaptureTool(QWidget):
     """
@@ -32,10 +34,13 @@ class ScreenCaptureTool(QWidget):
         endPoint - The end point of the selection.
         screenshot - The cropped screenshot image.
     """
+
     ocr: pyqtSignal = pyqtSignal(str)
     quit_signal: pyqtSignal = pyqtSignal()
     sst_finished: pyqtSignal = pyqtSignal()
+    sst_begin: pyqtSignal = pyqtSignal()
     show_image: pyqtSignal = pyqtSignal()
+
     def __init__(self, parent=None):
         super().__init__()
         self.parent = parent
@@ -46,6 +51,7 @@ class ScreenCaptureTool(QWidget):
         self.show_image.connect(self.show_result)
         if self.parent:
             self.sst_finished.connect(self.parent.sst_finished_slot)
+            self.sst_begin.connect(self.parent.sst_begin_slot)
         self.initUI()
 
     def initUI(self):
@@ -57,11 +63,10 @@ class ScreenCaptureTool(QWidget):
         self.selecting = False
         self.ocr.connect(self.performOCR)
         self.quit_signal.connect(self.close)
-        
+
     def show(self):
         self.originalPixmap = QScreen.grabWindow(QApplication.primaryScreen(), 0)
         super().show()
-        
 
     def mousePressEvent(self, event: QMouseEvent):
         self.origin = event.pos()
@@ -76,9 +81,13 @@ class ScreenCaptureTool(QWidget):
         self.selecting = False
         rect = QRect(self.origin, self.endPoint).normalized()
         self.screenshot = self.originalPixmap.copy(rect)
-        self.screenshot.save("screenshot.png")
+        os.makedirs("screenshot_image", exist_ok=True)
+        self.image_num = len(os.listdir("screenshot_image"))
+        os.makedirs(f"screenshot_image/{self.image_num}", exist_ok=True)
+        self.screenshot.save(f"screenshot_image/{self.image_num}/screenshot.png")
         self.hide()
-        self.ocr.emit("screenshot.png")
+        self.sst_begin.emit()
+        self.ocr.emit(f"screenshot_image/{self.image_num}/screenshot.png")
 
     def paintEvent(self, event):
         painter = QPainter(self)
@@ -92,22 +101,29 @@ class ScreenCaptureTool(QWidget):
     @pyqtSlot(str)
     def performOCR(self, image_path: str):
         # 将QPixmap转换为PIL Image
-        self.text_todo, self.text_trans = ocr_process(image_path, engine=self.engine)
+        self.text_todo, self.text_trans = ocr_process(
+            image_path, engine=self.engine, image_num=self.image_num
+        )
+        with open(
+            f"screenshot_image/{self.image_num}/ocr.txt", "w", encoding="utf-8"
+        ) as f:
+            f.write(self.text_todo)
+        with open(
+            f"screenshot_image/{self.image_num}/trans.txt", "w", encoding="utf-8"
+        ) as f:
+            f.write(self.text_trans)
         self.sst_finished.emit()
         self.show_image.emit()
         # switch_image()
-        self.hide()
-        if self.parent:
-            self.parent.showNormal()
 
     @pyqtSlot()
     def show_result(self):
-        self.show_image_pool.append(SwitchImage())
+        self.show_image_pool.append(SwitchImage(self.image_num))
         self.show_image_pool[-1].show()
-        
+
+
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     tool = ScreenCaptureTool()
     tool.show()
     sys.exit(app.exec())
-

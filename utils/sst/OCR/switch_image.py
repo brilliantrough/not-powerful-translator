@@ -1,13 +1,26 @@
-
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QVBoxLayout, QPushButton, QHBoxLayout, QSpacerItem, QSizePolicy
+from PyQt5.QtWidgets import (
+    QApplication,
+    QWidget,
+    QLabel,
+    QVBoxLayout,
+    QPushButton,
+    QHBoxLayout,
+    QSpacerItem,
+    QSizePolicy,
+)
 from PyQt5.QtGui import QPixmap, QIcon
 import icon_rc
+import os
+
 
 class SwitchImage(QWidget):
-    def __init__(self):
+    def __init__(self, image_num):
         super().__init__()
         self.current_image = 0
-        self.image_paths = ["screenshot.png", "screenshot_text.png"]
+        self.image_paths = [
+            f"screenshot_image/{image_num}/screenshot.png",
+            f"screenshot_image/{image_num}/screenshot_text.png",
+        ]
         self.initUI()
 
     def initUI(self):
@@ -23,15 +36,14 @@ class SwitchImage(QWidget):
         self.button_layout = QHBoxLayout()
         self.layout.addLayout(self.button_layout)
 
-
         spacer = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
         self.button_layout.addItem(spacer)
 
-        self.toggle_button = QPushButton('Toggle', self)
+        self.toggle_button = QPushButton("Toggle", self)
         self.toggle_button.clicked.connect(self.toggle_image)
         self.button_layout.addWidget(self.toggle_button)
 
-        self.close_button = QPushButton('Close', self)
+        self.close_button = QPushButton("Close", self)
         self.close_button.clicked.connect(self.close)
         self.button_layout.addWidget(self.close_button)
 
