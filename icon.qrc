@@ -1,5 +1,6 @@
 <RCC>
   <qresource>
     <file>candy.ico</file>
+    <file>copy.svg</file>
   </qresource>
 </RCC>
